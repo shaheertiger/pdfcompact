@@ -1,0 +1,7 @@
+# ads.txt for pdfcompact.com
+#
+# Once you have a Google AdSense publisher ID, add a line like:
+#   google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+#
+# Replace pub-XXXXXXXXXXXXXXXX with your actual AdSense publisher ID
+# (same value as NEXT_PUBLIC_ADSENSE_CLIENT in your environment variables).
