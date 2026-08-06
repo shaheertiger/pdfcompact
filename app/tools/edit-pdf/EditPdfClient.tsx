@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { Type, Highlighter, X, ChevronLeft, ChevronRight } from "lucide-react";
 import Dropzone from "@/components/Dropzone";
 import { downloadBlob, bytesToBlob, baseName } from "@/lib/download";
 import { nextId } from "@/lib/id";
@@ -243,7 +244,8 @@ export default function EditPdfClient() {
                   : "border-black/10 dark:border-white/10"
               }`}
             >
-              🔤 Add text
+              <Type className="inline h-4 w-4 mr-1 -mt-0.5" aria-hidden="true" />
+              Add text
             </button>
             <select
               value={fontSize}
@@ -263,7 +265,8 @@ export default function EditPdfClient() {
                   : "border-black/10 dark:border-white/10"
               }`}
             >
-              🖍️ Highlight
+              <Highlighter className="inline h-4 w-4 mr-1 -mt-0.5" aria-hidden="true" />
+              Highlight
             </button>
 
             <div className="flex-1" />
@@ -274,9 +277,10 @@ export default function EditPdfClient() {
                   type="button"
                   disabled={currentPage <= 1}
                   onClick={() => loadPage(currentPage - 1)}
-                  className="disabled:opacity-30"
+                  className="flex items-center disabled:opacity-30"
                 >
-                  ← Prev
+                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                  Prev
                 </button>
                 <span>
                   Page {currentPage} / {numPages}
@@ -285,9 +289,10 @@ export default function EditPdfClient() {
                   type="button"
                   disabled={currentPage >= numPages}
                   onClick={() => loadPage(currentPage + 1)}
-                  className="disabled:opacity-30"
+                  className="flex items-center disabled:opacity-30"
                 >
-                  Next →
+                  Next
+                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
             )}
@@ -344,9 +349,9 @@ export default function EditPdfClient() {
                   <button
                     type="button"
                     onClick={() => removeAnnotation(a.id)}
-                    className="absolute -top-2 -right-2 hidden group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-black/70 text-white text-xs"
+                    className="absolute -top-2 -right-2 hidden group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-black/70 text-white"
                   >
-                    ✕
+                    <X className="h-3 w-3" aria-hidden="true" />
                   </button>
                 </div>
               ) : (
@@ -368,9 +373,9 @@ export default function EditPdfClient() {
                   <button
                     type="button"
                     onClick={() => removeAnnotation(a.id)}
-                    className="absolute -top-2 -right-2 hidden group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-black/70 text-white text-xs"
+                    className="absolute -top-2 -right-2 hidden group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-black/70 text-white"
                   >
-                    ✕
+                    <X className="h-3 w-3" aria-hidden="true" />
                   </button>
                 </div>
               )

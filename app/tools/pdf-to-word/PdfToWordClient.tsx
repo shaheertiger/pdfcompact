@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Document, Packer, Paragraph, PageBreak } from "docx";
+import { CheckCircle2 } from "lucide-react";
 import Dropzone from "@/components/Dropzone";
 import { downloadBlob, baseName } from "@/lib/download";
 import { loadPdfjs, extractPageText } from "@/lib/pdfjs";
@@ -63,7 +64,10 @@ export default function PdfToWordClient() {
 
       {file && done && !isConverting && (
         <div className="mt-4 flex items-center justify-between rounded-lg border border-black/10 dark:border-white/10 px-4 py-3 bg-emerald-50 dark:bg-emerald-500/10">
-          <span className="text-sm">✅ {baseName(file.name)}.docx downloaded</span>
+          <span className="flex items-center gap-2 text-sm">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" aria-hidden="true" />
+            {baseName(file.name)}.docx downloaded
+          </span>
           <button
             type="button"
             onClick={() => {

@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { PDFDocument } from "pdf-lib";
+import { X } from "lucide-react";
 import Dropzone from "@/components/Dropzone";
 import { downloadBlob, bytesToBlob } from "@/lib/download";
 import { nextId } from "@/lib/id";
@@ -138,7 +139,7 @@ export default function ImageToPdfClient() {
                 className="absolute top-1 right-1 bg-black/70 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hover:bg-red-600"
                 aria-label="Remove"
               >
-                ✕
+                <X className="h-3 w-3" aria-hidden="true" />
               </button>
             </div>
           ))}

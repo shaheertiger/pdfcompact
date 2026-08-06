@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PDFDocument } from "pdf-lib";
+import { Trash2 } from "lucide-react";
 import Dropzone from "@/components/Dropzone";
 import { downloadBlob, bytesToBlob, baseName } from "@/lib/download";
 import { loadPdfjs, renderPageThumbnail } from "@/lib/pdfjs";
@@ -128,8 +129,8 @@ export default function RemovePagesClient() {
                     {page.index + 1}
                   </span>
                   {marked && (
-                    <span className="absolute inset-0 flex items-center justify-center text-3xl text-red-600">
-                      🗑️
+                    <span className="absolute inset-0 flex items-center justify-center bg-black/10">
+                      <Trash2 className="h-8 w-8 text-red-600" aria-hidden="true" />
                     </span>
                   )}
                 </button>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PDFDocument } from "pdf-lib";
+import { Check } from "lucide-react";
 import Dropzone from "@/components/Dropzone";
 import { downloadBlob, bytesToBlob, baseName } from "@/lib/download";
 import { loadPdfjs, renderPageThumbnail } from "@/lib/pdfjs";
@@ -124,8 +125,8 @@ export default function ExtractClient() {
                     {page.index + 1}
                   </span>
                   {isSelected && (
-                    <span className="absolute top-1 left-1 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      ✓
+                    <span className="absolute top-1 left-1 bg-red-600 text-white rounded-full h-5 w-5 flex items-center justify-center">
+                      <Check className="h-3 w-3" aria-hidden="true" />
                     </span>
                   )}
                 </button>

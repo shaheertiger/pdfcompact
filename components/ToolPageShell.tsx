@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
+import { Lock } from "lucide-react";
 import AdSlot from "@/components/AdSlot";
 import TrustBadges from "@/components/TrustBadges";
 import RelatedTools from "@/components/RelatedTools";
+import ToolIcon from "@/components/ToolIcon";
+import { siteUrl, siteName } from "@/lib/site";
 import type { Tool } from "@/lib/tools";
 
 type ToolPageShellProps = {
@@ -10,7 +13,9 @@ type ToolPageShellProps = {
 };
 
 export default function ToolPageShell({ tool, children }: ToolPageShellProps) {
-  const faqJsonLd = {
+  const url = `${siteUrl}/tools/${tool.slug}`;
+
+  const faqJsonLd = tool.faq.length > 0 && {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: tool.faq.map((item) => ({
@@ -20,19 +25,40 @@ export default function ToolPageShell({ tool, children }: ToolPageShellProps) {
     })),
   };
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: tool.name, item: url },
+    ],
+  };
+
+  const appJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: `${tool.name} — ${siteName}`,
+    url,
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any (runs in web browser)",
+    description: tool.description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-6 sm:py-10 w-full">
       {/* First fold: title, one-line description, and the tool itself — no scrolling required to start. */}
       <div className="text-center max-w-2xl mx-auto mb-4 sm:mb-6">
         <div className="flex items-center justify-center gap-2 mb-1.5">
-          <span className="text-3xl sm:text-4xl leading-none">{tool.icon}</span>
+          <ToolIcon name={tool.icon} className="h-7 w-7 sm:h-8 sm:w-8 text-red-600" />
           <h1 className="text-2xl sm:text-4xl font-bold tracking-tight">{tool.name}</h1>
         </div>
         <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
           {tool.description}
         </p>
         <p className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 rounded-full px-3 py-1">
-          🔒 Processed in your browser — never uploaded.
+          <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+          Processed in your browser — never uploaded.
         </p>
       </div>
 
@@ -93,14 +119,25 @@ export default function ToolPageShell({ tool, children }: ToolPageShellProps) {
               </div>
             ))}
           </div>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-          />
         </section>
       )}
 
       <RelatedTools slug={tool.slug} />
+
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(appJsonLd) }}
+      />
     </div>
   );
 }

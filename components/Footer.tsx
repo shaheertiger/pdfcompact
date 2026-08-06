@@ -6,11 +6,8 @@ export default function Footer() {
     <footer className="border-t border-black/10 dark:border-white/10 mt-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 grid gap-8 sm:grid-cols-3">
         <div>
-          <div className="flex items-center gap-2 font-bold text-lg mb-2">
-            <span className="text-2xl leading-none">📎</span>
-            <span>
-              PDF<span className="text-red-600">Compact</span>
-            </span>
+          <div className="font-bold text-lg mb-2">
+            PDF<span className="text-red-600">Compact</span>
           </div>
           <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-xs">
             Free, fast PDF tools that run entirely in your browser. Your files

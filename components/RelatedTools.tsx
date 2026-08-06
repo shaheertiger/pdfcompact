@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ToolIcon from "@/components/ToolIcon";
 import { getRelatedTools } from "@/lib/tools";
 
 export default function RelatedTools({ slug }: { slug: string }) {
@@ -18,7 +19,7 @@ export default function RelatedTools({ slug }: { slug: string }) {
             href={`/tools/${tool.slug}`}
             className="rounded-xl border border-black/10 dark:border-white/10 p-4 hover:border-red-400 hover:shadow-sm transition-all bg-white dark:bg-zinc-900"
           >
-            <div className="text-2xl mb-2">{tool.icon}</div>
+            <ToolIcon name={tool.icon} className="h-5 w-5 mb-2 text-red-600" />
             <div className="font-medium text-sm">{tool.name}</div>
           </Link>
         ))}

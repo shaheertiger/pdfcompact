@@ -1,5 +1,7 @@
 import Link from "next/link";
 import AdSlot from "@/components/AdSlot";
+import ToolIcon from "@/components/ToolIcon";
+import TrustBadges from "@/components/TrustBadges";
 import { tools } from "@/lib/tools";
 
 export default function Home() {
@@ -32,7 +34,7 @@ export default function Home() {
               href={`/tools/${tool.slug}`}
               className="group rounded-xl border border-black/10 dark:border-white/10 p-5 hover:border-red-400 hover:shadow-md transition-all bg-white dark:bg-zinc-900"
             >
-              <div className="text-3xl mb-3">{tool.icon}</div>
+              <ToolIcon name={tool.icon} className="h-7 w-7 mb-3 text-red-600" />
               <h3 className="font-semibold mb-1 group-hover:text-red-600">
                 {tool.name}
               </h3>
@@ -50,30 +52,7 @@ export default function Home() {
       />
 
       <section className="mx-auto max-w-5xl px-4 sm:px-6 pb-16 w-full">
-        <div className="grid gap-6 sm:grid-cols-3 text-center">
-          <div>
-            <div className="text-3xl mb-2">🔒</div>
-            <h3 className="font-semibold mb-1">Private by default</h3>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Files are processed locally in your browser and never sent to a
-              server.
-            </p>
-          </div>
-          <div>
-            <div className="text-3xl mb-2">⚡</div>
-            <h3 className="font-semibold mb-1">Fast</h3>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              No uploads or queues — results are ready in seconds.
-            </p>
-          </div>
-          <div>
-            <div className="text-3xl mb-2">💸</div>
-            <h3 className="font-semibold mb-1">Free</h3>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Every tool is free to use, with no account required.
-            </p>
-          </div>
-        </div>
+        <TrustBadges />
       </section>
     </div>
   );

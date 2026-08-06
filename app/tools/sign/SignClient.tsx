@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Caveat } from "next/font/google";
 import { PDFDocument } from "pdf-lib";
+import { Minus, Plus, X, ChevronLeft, ChevronRight } from "lucide-react";
 import Dropzone from "@/components/Dropzone";
 import { downloadBlob, bytesToBlob, baseName } from "@/lib/download";
 import { nextId } from "@/lib/id";
@@ -334,14 +335,16 @@ export default function SignClient() {
 
               {numPages > 1 && (
                 <div className="ml-auto flex items-center gap-2 text-sm">
-                  <button type="button" disabled={currentPage <= 1} onClick={() => loadPage(currentPage - 1)} className="disabled:opacity-30">
-                    ← Prev
+                  <button type="button" disabled={currentPage <= 1} onClick={() => loadPage(currentPage - 1)} className="flex items-center disabled:opacity-30">
+                    <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                    Prev
                   </button>
                   <span>
                     Page {currentPage} / {numPages}
                   </span>
-                  <button type="button" disabled={currentPage >= numPages} onClick={() => loadPage(currentPage + 1)} className="disabled:opacity-30">
-                    Next →
+                  <button type="button" disabled={currentPage >= numPages} onClick={() => loadPage(currentPage + 1)} className="flex items-center disabled:opacity-30">
+                    Next
+                    <ChevronRight className="h-4 w-4" aria-hidden="true" />
                   </button>
                 </div>
               )}
@@ -370,23 +373,23 @@ export default function SignClient() {
                   <button
                     type="button"
                     onClick={() => resizePlacement(p.id, -0.03)}
-                    className="h-5 w-5 flex items-center justify-center rounded-full bg-black/70 text-white text-xs"
+                    className="h-5 w-5 flex items-center justify-center rounded-full bg-black/70 text-white"
                   >
-                    −
+                    <Minus className="h-3 w-3" aria-hidden="true" />
                   </button>
                   <button
                     type="button"
                     onClick={() => resizePlacement(p.id, 0.03)}
-                    className="h-5 w-5 flex items-center justify-center rounded-full bg-black/70 text-white text-xs"
+                    className="h-5 w-5 flex items-center justify-center rounded-full bg-black/70 text-white"
                   >
-                    +
+                    <Plus className="h-3 w-3" aria-hidden="true" />
                   </button>
                   <button
                     type="button"
                     onClick={() => removePlacement(p.id)}
-                    className="h-5 w-5 flex items-center justify-center rounded-full bg-black/70 text-white text-xs"
+                    className="h-5 w-5 flex items-center justify-center rounded-full bg-black/70 text-white"
                   >
-                    ✕
+                    <X className="h-3 w-3" aria-hidden="true" />
                   </button>
                 </div>
               </div>

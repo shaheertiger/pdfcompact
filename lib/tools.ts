@@ -22,7 +22,7 @@ export const tools: Tool[] = [
     short: "Combine PDFs into one file",
     description:
       "Combine multiple PDF files into a single document in the order you choose.",
-    icon: "🔗",
+    icon: "Combine",
     category: "organize",
     keywords: ["merge pdf", "combine pdf", "join pdf files"],
     about: [
@@ -59,7 +59,7 @@ export const tools: Tool[] = [
     short: "Split a PDF into multiple files",
     description:
       "Split a PDF by page ranges or every N pages and download the results as a ZIP.",
-    icon: "✂️",
+    icon: "Scissors",
     category: "organize",
     keywords: ["split pdf", "separate pdf pages"],
     about: [
@@ -91,7 +91,7 @@ export const tools: Tool[] = [
     short: "Reorder pages by dragging thumbnails",
     description:
       "Drag and drop page thumbnails to reorder the pages in your PDF.",
-    icon: "🔀",
+    icon: "ArrowDownUp",
     category: "organize",
     keywords: ["rearrange pdf pages", "reorder pdf"],
     about: [
@@ -117,7 +117,7 @@ export const tools: Tool[] = [
     short: "Delete unwanted pages from a PDF",
     description:
       "Preview every page and remove the ones you don't need in a few clicks.",
-    icon: "🗑️",
+    icon: "Trash2",
     category: "organize",
     keywords: ["remove pdf pages", "delete pdf pages"],
     about: [
@@ -147,7 +147,7 @@ export const tools: Tool[] = [
     short: "Pull specific pages into a new PDF",
     description:
       "Select the pages you want and save them as a brand new PDF file.",
-    icon: "📄",
+    icon: "FileOutput",
     category: "organize",
     keywords: ["extract pdf pages", "get pages from pdf"],
     about: [
@@ -173,7 +173,7 @@ export const tools: Tool[] = [
     short: "Extract plain text from a PDF",
     description:
       "Pull all the text out of a PDF and download it as a .txt file.",
-    icon: "📝",
+    icon: "FileText",
     category: "convert",
     keywords: ["pdf to text", "extract text from pdf"],
     about: [
@@ -199,7 +199,7 @@ export const tools: Tool[] = [
     short: "Convert a PDF to an editable .docx",
     description:
       "Convert PDF text into a Microsoft Word (.docx) document you can edit.",
-    icon: "📃",
+    icon: "FileType",
     category: "convert",
     keywords: ["pdf to word", "convert pdf to docx"],
     about: [
@@ -230,7 +230,7 @@ export const tools: Tool[] = [
     short: "Turn photos and images into a PDF",
     description:
       "Combine JPG, PNG, or WebP images into a single, ready-to-share PDF.",
-    icon: "🖼️",
+    icon: "Image",
     category: "convert",
     keywords: ["image to pdf", "jpg to pdf", "png to pdf"],
     about: [
@@ -255,7 +255,7 @@ export const tools: Tool[] = [
     short: "Turn PDF pages into JPG images",
     description:
       "Convert every page of a PDF into a high-quality JPG image, ready to download.",
-    icon: "🖨️",
+    icon: "FileImage",
     category: "convert",
     keywords: ["pdf to jpg", "pdf to image", "convert pdf to jpg"],
     about: [
@@ -287,7 +287,7 @@ export const tools: Tool[] = [
     short: "Add text, shapes, and highlights",
     description:
       "Add text boxes, highlights, and shapes to your PDF, then save the result.",
-    icon: "✏️",
+    icon: "PenLine",
     category: "edit-sign",
     keywords: ["edit pdf", "annotate pdf"],
     about: [
@@ -297,7 +297,7 @@ export const tools: Tool[] = [
       "Upload the PDF you want to edit.",
       "Click \"Add text\" then click anywhere on the page to place a text box — double-click it to change the wording.",
       "Click \"Highlight\" then drag over an area to draw a highlight.",
-      "Drag any text box to reposition it, or click the ✕ to remove an annotation.",
+      "Drag any text box to reposition it, or click the remove button to delete an annotation.",
       "Click \"Save edited PDF\" to download your changes.",
     ],
     faq: [
@@ -319,7 +319,7 @@ export const tools: Tool[] = [
     short: "Draw or type a signature",
     description:
       "Draw, type, or upload a signature and place it anywhere on your PDF.",
-    icon: "✍️",
+    icon: "FileSignature",
     category: "edit-sign",
     keywords: ["sign pdf", "esignature pdf", "electronic signature"],
     about: [

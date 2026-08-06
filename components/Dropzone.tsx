@@ -2,6 +2,7 @@
 
 import { useCallback, useId, useState } from "react";
 import type { DragEvent } from "react";
+import { UploadCloud } from "lucide-react";
 
 type DropzoneProps = {
   accept?: string;
@@ -53,7 +54,7 @@ export default function Dropzone({
           : "border-black/20 dark:border-white/20 hover:border-red-400"
       }`}
     >
-      <span className="text-4xl">📤</span>
+      <UploadCloud className="h-9 w-9 text-zinc-400" aria-hidden="true" />
       <span className="font-medium">{label}</span>
       <span className="text-sm text-zinc-500">{hint}</span>
       <input
