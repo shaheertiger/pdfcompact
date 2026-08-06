@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
 import ToolPageShell from "@/components/ToolPageShell";
 import { getTool } from "@/lib/tools";
-import ImageToPdfClient from "./ImageToPdfClient";
+import PdfToJpgClient from "./PdfToJpgClient";
 
-const tool = getTool("image-to-pdf")!;
+const tool = getTool("pdf-to-jpg")!;
 
 export const metadata: Metadata = {
   title: tool.name,
   description: tool.description,
-  alternates: { canonical: "/tools/image-to-pdf" },
+  alternates: { canonical: "/tools/pdf-to-jpg" },
 };
 
-export default function ImageToPdfPage() {
+export default function PdfToJpgPage() {
   return (
     <ToolPageShell tool={tool}>
-      <ImageToPdfClient />
+      <PdfToJpgClient />
     </ToolPageShell>
   );
 }
