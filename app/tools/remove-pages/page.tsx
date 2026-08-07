@@ -7,7 +7,8 @@ const tool = getTool("remove-pages")!;
 
 export const metadata: Metadata = {
   title: tool.name,
-  description: tool.description,
+  description: tool.metaDescription ?? tool.description,
+  keywords: tool.keywords,
   alternates: { canonical: "/tools/remove-pages" },
 };
 

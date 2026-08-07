@@ -95,3 +95,19 @@ Copy `.env.example` to `.env.local` and fill in what you have:
 - [`pdfjs-dist`](https://github.com/mozilla/pdf.js) for rendering page thumbnails and extracting text
 - [`docx`](https://github.com/dolanmiu/docx) for PDF → Word conversion
 - [`jszip`](https://github.com/Stuk/jszip) for multi-file split downloads
+
+### Why `pdfjs-dist` is pinned to an exact version
+
+`pdfjs-dist` is pinned to an exact version (no `^`) rather than a range, for two reasons:
+
+1. **Security**: versions `5.6.83`–`6.2.107` have a
+   [known high-severity vulnerability](https://github.com/advisories/GHSA-hq66-cqwq-w95j)
+   (arbitrary JS execution from a malicious PDF) — a real risk here since every tool renders
+   user-uploaded PDFs. `npm audit` will flag this if the pin is loosened back to a caret range.
+2. **Browser compatibility**: `6.x` versions use `Map.prototype.getOrInsertComputed`, a very
+   recent JS feature not yet supported in most browsers, which silently breaks every
+   thumbnail-based tool.
+
+When bumping this dependency, pin to an exact version below `5.6.83`, or `6.2.108`+ once its
+browser support has matured — and re-run `npm audit` plus a real browser test of the
+thumbnail-based tools (Rearrange, Remove Pages, Extract, Edit PDF, Sign) before committing.

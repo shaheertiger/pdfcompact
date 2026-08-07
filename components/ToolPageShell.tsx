@@ -41,8 +41,19 @@ export default function ToolPageShell({ tool, children }: ToolPageShellProps) {
     url,
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "Any (runs in web browser)",
-    description: tool.description,
+    description: tool.metaDescription ?? tool.description,
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  const howToJsonLd = tool.howTo.length > 0 && {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: `How to use ${tool.name}`,
+    step: tool.howTo.map((step, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      text: step,
+    })),
   };
 
   return (
@@ -128,6 +139,12 @@ export default function ToolPageShell({ tool, children }: ToolPageShellProps) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
+      {howToJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
         />
       )}
       <script

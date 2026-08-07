@@ -4,7 +4,7 @@ import { siteName } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
-  description: `About ${siteName} and how our free PDF tools work.`,
+  description: `${siteName} offers free PDF tools — merge, split, edit, sign, and convert — that run entirely in your browser. No uploads, no accounts, no cost.`,
   alternates: { canonical: "/about" },
 };
 

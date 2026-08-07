@@ -3,7 +3,7 @@ import { siteName } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
-  description: `The terms for using ${siteName}.`,
+  description: `The terms of service for using ${siteName}'s free, browser-based PDF tools.`,
   alternates: { canonical: "/terms" },
 };
 

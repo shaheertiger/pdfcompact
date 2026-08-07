@@ -2,11 +2,27 @@ import Link from "next/link";
 import AdSlot from "@/components/AdSlot";
 import ToolIcon from "@/components/ToolIcon";
 import TrustBadges from "@/components/TrustBadges";
+import { siteUrl } from "@/lib/site";
 import { tools } from "@/lib/tools";
 
 export default function Home() {
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: tools.map((tool, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: tool.name,
+      url: `${siteUrl}/tools/${tool.slug}`,
+    })),
+  };
+
   return (
     <div className="flex flex-1 flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
       <section className="bg-gradient-to-b from-red-50 to-white dark:from-red-950/20 dark:to-black">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 py-16 sm:py-24 text-center">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">

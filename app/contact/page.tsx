@@ -3,7 +3,7 @@ import { siteName } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: `Get in touch with the ${siteName} team.`,
+  description: `Questions, feedback, or a tool request for ${siteName}? Get in touch with our team by email — we'd love to hear from you.`,
   alternates: { canonical: "/contact" },
 };
 
