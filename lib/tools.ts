@@ -7,6 +7,8 @@ export type Tool = {
   name: string;
   short: string;
   description: string;
+  /** Longer, keyword-rich description for search engine snippets (~140-160 chars). Falls back to `description` if omitted. */
+  metaDescription?: string;
   icon: string;
   category: Category;
   keywords: string[];
@@ -22,6 +24,8 @@ export const tools: Tool[] = [
     short: "Combine PDFs into one file",
     description:
       "Combine multiple PDF files into a single document in the order you choose.",
+    metaDescription:
+      "Merge PDF files online for free. Combine multiple PDFs into one document in any order, right in your browser — no upload, sign-up, or watermark.",
     icon: "Combine",
     category: "organize",
     keywords: ["merge pdf", "combine pdf", "join pdf files"],
@@ -59,6 +63,8 @@ export const tools: Tool[] = [
     short: "Split a PDF into multiple files",
     description:
       "Split a PDF by page ranges or every N pages and download the results as a ZIP.",
+    metaDescription:
+      "Split a PDF online for free. Break a large PDF into separate files by page range or every N pages, then download instantly. No upload required.",
     icon: "Scissors",
     category: "organize",
     keywords: ["split pdf", "separate pdf pages"],
@@ -91,6 +97,8 @@ export const tools: Tool[] = [
     short: "Reorder pages by dragging thumbnails",
     description:
       "Drag and drop page thumbnails to reorder the pages in your PDF.",
+    metaDescription:
+      "Rearrange PDF pages online for free. Drag and drop page thumbnails to reorder your PDF exactly how you want it, all inside your browser.",
     icon: "ArrowDownUp",
     category: "organize",
     keywords: ["rearrange pdf pages", "reorder pdf"],
@@ -117,6 +125,8 @@ export const tools: Tool[] = [
     short: "Delete unwanted pages from a PDF",
     description:
       "Preview every page and remove the ones you don't need in a few clicks.",
+    metaDescription:
+      "Remove pages from a PDF online for free. Preview every page as a thumbnail and delete the ones you don't need in just a few clicks.",
     icon: "Trash2",
     category: "organize",
     keywords: ["remove pdf pages", "delete pdf pages"],
@@ -147,6 +157,8 @@ export const tools: Tool[] = [
     short: "Pull specific pages into a new PDF",
     description:
       "Select the pages you want and save them as a brand new PDF file.",
+    metaDescription:
+      "Extract pages from a PDF online for free. Select the pages you need and save them as a new PDF file, without touching the original document.",
     icon: "FileOutput",
     category: "organize",
     keywords: ["extract pdf pages", "get pages from pdf"],
@@ -173,6 +185,8 @@ export const tools: Tool[] = [
     short: "Extract plain text from a PDF",
     description:
       "Pull all the text out of a PDF and download it as a .txt file.",
+    metaDescription:
+      "Convert PDF to text online for free. Extract all the plain text from a PDF document and download it as a .txt file, right in your browser.",
     icon: "FileText",
     category: "convert",
     keywords: ["pdf to text", "extract text from pdf"],
@@ -199,6 +213,8 @@ export const tools: Tool[] = [
     short: "Convert a PDF to an editable .docx",
     description:
       "Convert PDF text into a Microsoft Word (.docx) document you can edit.",
+    metaDescription:
+      "Convert PDF to Word online for free. Turn a PDF into an editable .docx file you can open in Microsoft Word or Google Docs in seconds.",
     icon: "FileType",
     category: "convert",
     keywords: ["pdf to word", "convert pdf to docx"],
@@ -230,6 +246,8 @@ export const tools: Tool[] = [
     short: "Turn photos and images into a PDF",
     description:
       "Combine JPG, PNG, or WebP images into a single, ready-to-share PDF.",
+    metaDescription:
+      "Convert JPG, PNG, or WebP images to PDF online for free. Combine multiple photos into a single, ready-to-share PDF document instantly.",
     icon: "Image",
     category: "convert",
     keywords: ["image to pdf", "jpg to pdf", "png to pdf"],
@@ -255,6 +273,8 @@ export const tools: Tool[] = [
     short: "Turn PDF pages into JPG images",
     description:
       "Convert every page of a PDF into a high-quality JPG image, ready to download.",
+    metaDescription:
+      "Convert PDF to JPG online for free. Turn every page of a PDF into a high-quality JPG image, downloaded as a single file or a ZIP archive.",
     icon: "FileImage",
     category: "convert",
     keywords: ["pdf to jpg", "pdf to image", "convert pdf to jpg"],
@@ -287,6 +307,8 @@ export const tools: Tool[] = [
     short: "Add text, shapes, and highlights",
     description:
       "Add text boxes, highlights, and shapes to your PDF, then save the result.",
+    metaDescription:
+      "Edit a PDF online for free. Add text boxes, highlights, and shapes directly on your PDF, then save the changes — no software to install.",
     icon: "PenLine",
     category: "edit-sign",
     keywords: ["edit pdf", "annotate pdf"],
@@ -319,6 +341,8 @@ export const tools: Tool[] = [
     short: "Draw or type a signature",
     description:
       "Draw, type, or upload a signature and place it anywhere on your PDF.",
+    metaDescription:
+      "Sign a PDF online for free. Draw or type your signature, place it anywhere on the document, and download the signed PDF instantly.",
     icon: "FileSignature",
     category: "edit-sign",
     keywords: ["sign pdf", "esignature pdf", "electronic signature"],

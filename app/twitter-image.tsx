@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { OgContent } from "@/lib/og";
 
+export const alt = "PDFCompact — Free PDF tools that run entirely in your browser";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
