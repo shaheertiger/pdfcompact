@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { PDFDocument } from "pdf-lib";
+import { GripVertical, X, ChevronUp, ChevronDown } from "lucide-react";
 import Dropzone from "@/components/Dropzone";
 import { downloadBlob, bytesToBlob } from "@/lib/download";
 import { nextId } from "@/lib/id";
@@ -94,7 +95,7 @@ export default function MergeClient() {
               }}
               className="flex items-center gap-3 rounded-lg border border-black/10 dark:border-white/10 px-3 py-2 bg-zinc-50 dark:bg-zinc-800/50 cursor-move"
             >
-              <span className="text-zinc-400 select-none">☰</span>
+              <GripVertical className="h-4 w-4 text-zinc-400 shrink-0" aria-hidden="true" />
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700 text-xs font-semibold">
                 {i + 1}
               </span>
@@ -109,7 +110,7 @@ export default function MergeClient() {
                 className="text-zinc-500 hover:text-red-600 disabled:opacity-30 px-1"
                 aria-label="Move up"
               >
-                ↑
+                <ChevronUp className="h-4 w-4" aria-hidden="true" />
               </button>
               <button
                 type="button"
@@ -118,7 +119,7 @@ export default function MergeClient() {
                 className="text-zinc-500 hover:text-red-600 disabled:opacity-30 px-1"
                 aria-label="Move down"
               >
-                ↓
+                <ChevronDown className="h-4 w-4" aria-hidden="true" />
               </button>
               <button
                 type="button"
@@ -126,7 +127,7 @@ export default function MergeClient() {
                 className="text-zinc-500 hover:text-red-600 px-1"
                 aria-label="Remove"
               >
-                ✕
+                <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </li>
           ))}

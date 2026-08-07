@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Document, Packer, Paragraph, PageBreak } from "docx";
+import JSZip from "jszip";
 import { CheckCircle2 } from "lucide-react";
 import Dropzone from "@/components/Dropzone";
 import { downloadBlob, baseName } from "@/lib/download";
-import { loadPdfjs, extractPageText } from "@/lib/pdfjs";
+import { loadPdfjs, renderPageToJpegBlob } from "@/lib/pdfjs";
 
-export default function PdfToWordClient() {
+export default function PdfToJpgClient() {
   const [file, setFile] = useState<File | null>(null);
   const [isConverting, setIsConverting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,25 +24,24 @@ export default function PdfToWordClient() {
       const pdfjs = await loadPdfjs();
       const pdf = await pdfjs.getDocument({ data: bytes }).promise;
 
-      const paragraphs: Paragraph[] = [];
+      const images: { name: string; blob: Blob }[] = [];
       for (let i = 1; i <= pdf.numPages; i++) {
-        const pageText = await extractPageText(pdf, i);
-        const lines = pageText.split("\n");
-        lines.forEach((line) => paragraphs.push(new Paragraph(line)));
-        if (i < pdf.numPages) {
-          paragraphs.push(new Paragraph({ children: [new PageBreak()] }));
-        }
+        const blob = await renderPageToJpegBlob(pdf, i);
+        images.push({ name: `${baseName(f.name)}-page${i}.jpg`, blob });
       }
 
-      const doc = new Document({
-        sections: [{ children: paragraphs.length > 0 ? paragraphs : [new Paragraph("")] }],
-      });
-      const blob = await Packer.toBlob(doc);
-      downloadBlob(blob, `${baseName(f.name)}.docx`);
+      if (images.length === 1) {
+        downloadBlob(images[0].blob, images[0].name);
+      } else {
+        const zip = new JSZip();
+        for (const img of images) zip.file(img.name, img.blob);
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        downloadBlob(zipBlob, `${baseName(f.name)}-jpg.zip`);
+      }
       setDone(true);
     } catch (e) {
       console.error(e);
-      setError("Couldn't convert this PDF. It may be scanned images without text, or password protected.");
+      setError("Couldn't convert this PDF. It may be corrupted or password protected.");
     } finally {
       setIsConverting(false);
     }
@@ -54,7 +53,7 @@ export default function PdfToWordClient() {
         <Dropzone onFiles={onFiles} label="Drop a PDF here" hint="or click to browse" />
       )}
 
-      {isConverting && <p className="mt-4 text-sm text-zinc-500">Converting to Word…</p>}
+      {isConverting && <p className="mt-4 text-sm text-zinc-500">Converting pages to JPG…</p>}
 
       {error && (
         <p className="mt-4 text-sm text-red-600 bg-red-50 dark:bg-red-500/10 rounded-lg px-4 py-2">
@@ -66,7 +65,7 @@ export default function PdfToWordClient() {
         <div className="mt-4 flex items-center justify-between rounded-lg border border-black/10 dark:border-white/10 px-4 py-3 bg-emerald-50 dark:bg-emerald-500/10">
           <span className="flex items-center gap-2 text-sm">
             <CheckCircle2 className="h-4 w-4 text-emerald-600" aria-hidden="true" />
-            {baseName(file.name)}.docx downloaded
+            Your JPG{`(s)`} downloaded
           </span>
           <button
             type="button"

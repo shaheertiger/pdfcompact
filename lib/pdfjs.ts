@@ -35,6 +35,36 @@ export async function renderPageThumbnail(
   return canvas.toDataURL("image/png");
 }
 
+export async function renderPageToJpegBlob(
+  pdf: PdfJsLib.PDFDocumentProxy,
+  pageNumber: number,
+  scale = 2,
+  quality = 0.9
+): Promise<Blob> {
+  const page = await pdf.getPage(pageNumber);
+  const viewport = page.getViewport({ scale });
+
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.ceil(viewport.width);
+  canvas.height = Math.ceil(viewport.height);
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("Canvas not supported");
+
+  // JPEG has no alpha channel; paint a white background first.
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  await page.render({ canvas, canvasContext: context, viewport }).promise;
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error("toBlob failed"))),
+      "image/jpeg",
+      quality
+    );
+  });
+}
+
 export async function extractPageText(
   pdf: PdfJsLib.PDFDocumentProxy,
   pageNumber: number

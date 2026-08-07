@@ -13,11 +13,31 @@ A project of [PDF Canada](https://pdfcanada.ca/).
 - PDF to Text (`/tools/pdf-to-text`)
 - PDF to Word (`/tools/pdf-to-word`)
 - Image to PDF (`/tools/image-to-pdf`)
+- PDF to JPG (`/tools/pdf-to-jpg`)
 - Edit PDF (`/tools/edit-pdf`)
 - Sign PDF (`/tools/sign`)
 
 All file processing happens client-side with [`pdf-lib`](https://github.com/Hopding/pdf-lib) and
 [`pdfjs-dist`](https://github.com/mozilla/pdf.js) — files are never uploaded to a server.
+
+## Adding a new tool (pSEO pattern)
+
+Every tool's copy — name, one-line description, "about" paragraphs, how-to steps, and FAQ — lives
+in one place: `lib/tools.ts`. `ToolPageShell` (`components/ToolPageShell.tsx`) reads that data and
+renders the whole page: a compact, mobile-first-fold hero (icon + title + one-line description +
+the tool itself, all visible without scrolling), body copy, trust badges, how-to steps, an FAQ
+with `FAQPage` JSON-LD for rich results, and a `RelatedTools` grid that cross-links tools sharing a
+`category` automatically. The homepage grid, header dropdown, footer links, and `sitemap.ts` all
+render straight from the same `tools` array too.
+
+That means adding a new tool page is just:
+
+1. Add an entry to `tools` in `lib/tools.ts` (slug, name, description, icon, category, keywords,
+   about, howTo, faq).
+2. Build the tool's interactive `"use client"` component under `app/tools/<slug>/`.
+3. Add a 12-line `page.tsx` that renders `<ToolPageShell tool={tool}><YourClient /></ToolPageShell>`.
+
+No other file needs to change — navigation, sitemap, and cross-links all pick it up automatically.
 
 ## Getting started
 

@@ -1,0 +1,26 @@
+# PDFCompact
+
+> PDFCompact is a free collection of PDF tools that run entirely in the browser. Files are processed locally with JavaScript and are never uploaded to a server. No account, watermark, or file limit.
+
+PDFCompact is a project of [PDF Canada](https://pdfcanada.ca/).
+
+## Tools
+
+- [Merge PDF](https://pdfcompact.com/tools/merge-pdf): Combine multiple PDF files into one document in the order you choose.
+- [Split PDF](https://pdfcompact.com/tools/split): Split a PDF by page ranges or every N pages.
+- [Rearrange Pages](https://pdfcompact.com/tools/rearrange): Reorder PDF pages by dragging thumbnails.
+- [Remove Pages](https://pdfcompact.com/tools/remove-pages): Delete unwanted pages from a PDF.
+- [Extract Pages](https://pdfcompact.com/tools/extract): Pull specific pages out into a new PDF.
+- [PDF to Text](https://pdfcompact.com/tools/pdf-to-text): Extract plain text from a PDF.
+- [PDF to Word](https://pdfcompact.com/tools/pdf-to-word): Convert a PDF to an editable .docx file.
+- [Image to PDF](https://pdfcompact.com/tools/image-to-pdf): Combine JPG, PNG, or WebP images into a PDF.
+- [PDF to JPG](https://pdfcompact.com/tools/pdf-to-jpg): Convert PDF pages into JPG images.
+- [Edit PDF](https://pdfcompact.com/tools/edit-pdf): Add text boxes and highlights to a PDF.
+- [Sign PDF](https://pdfcompact.com/tools/sign): Draw or type a signature and place it on a PDF.
+
+## About
+
+- [About](https://pdfcompact.com/about): What PDFCompact is and how it works.
+- [Contact](https://pdfcompact.com/contact): How to reach the PDFCompact team.
+- [Privacy Policy](https://pdfcompact.com/privacy)
+- [Terms of Service](https://pdfcompact.com/terms)

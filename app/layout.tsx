@@ -38,10 +38,28 @@ export const metadata: Metadata = {
     description:
       "Merge, split, rearrange, edit, sign, and convert PDFs for free. Every tool runs locally in your browser.",
   },
+  alternates: {
+    canonical: "/",
+  },
   robots: {
     index: true,
     follow: true,
   },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: siteName,
+  url: siteUrl,
+  sameAs: ["https://pdfcanada.ca/"],
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: siteName,
+  url: siteUrl,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -55,6 +73,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <main className="flex-1 flex flex-col">{children}</main>
         <Footer />
         <AdSenseScript />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
       </body>
     </html>
   );

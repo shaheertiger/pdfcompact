@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { tools } from "@/lib/tools";
+import ToolIcon from "@/components/ToolIcon";
 
 export default function Header() {
   return (
     <header className="border-b border-black/10 dark:border-white/10 bg-white/80 dark:bg-black/80 backdrop-blur sticky top-0 z-40">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg shrink-0">
-          <span className="text-2xl leading-none">📎</span>
+        <Link href="/" className="flex items-center gap-1 font-bold text-lg shrink-0">
           <span>
             PDF<span className="text-red-600">Compact</span>
           </span>
@@ -24,7 +24,7 @@ export default function Header() {
                     href={`/tools/${tool.slug}`}
                     className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-black/5 dark:hover:bg-white/10"
                   >
-                    <span>{tool.icon}</span>
+                    <ToolIcon name={tool.icon} className="h-4 w-4 text-zinc-500" />
                     <span>{tool.name}</span>
                   </Link>
                 ))}
