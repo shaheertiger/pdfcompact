@@ -28,10 +28,22 @@ export const tools: Tool[] = [
       "Merge PDF files online for free. Combine multiple PDFs into one document in any order, right in your browser — no upload, sign-up, or watermark.",
     icon: "Combine",
     category: "organize",
-    keywords: ["merge pdf", "combine pdf", "join pdf files"],
+    keywords: [
+      "merge pdf",
+      "combine pdf",
+      "join pdf files",
+      "pdf merger",
+      "pdf joiner",
+      "pdf combiner",
+      "unite pdf files",
+      "combine pdf files into one",
+      "join pdf documents",
+      "merge pdf files into one pdf",
+    ],
     about: [
       "Merging PDFs is useful whenever you need to send one file instead of several — combining scanned receipts, stitching together chapters of a report, or joining signed contract pages into a single document.",
       "This merger keeps every page's original formatting, fonts, and images intact. It simply copies pages from each source file into a new PDF in the order you set.",
+      "Whether you call it a PDF merger, a PDF joiner, or a way to unite pdf files into one — this tool does the same thing: combine multiple PDF files into a single document.",
     ],
     howTo: [
       "Upload two or more PDF files using the box above.",
@@ -55,6 +67,11 @@ export const tools: Tool[] = [
         answer:
           "No. Everything happens locally in your browser using JavaScript — your files never leave your device.",
       },
+      {
+        question: "Is this the same as a PDF joiner or PDF combiner?",
+        answer:
+          "Yes — merge, combine, join, and unite all describe the same result: multiple PDF files stitched into one document, in the order you set.",
+      },
     ],
   },
   {
@@ -67,10 +84,17 @@ export const tools: Tool[] = [
       "Split a PDF online for free. Break a large PDF into separate files by page range or every N pages, then download instantly. No upload required.",
     icon: "Scissors",
     category: "organize",
-    keywords: ["split pdf", "separate pdf pages"],
+    keywords: [
+      "split pdf",
+      "separate pdf pages",
+      "split pdf online",
+      "split pdf file",
+      "separate pdf into multiple files",
+    ],
     about: [
       "Splitting a large PDF makes it easier to share just the section someone needs — an invoice, a single chapter, or a specific form — without sending the whole document.",
       "Choose to break the file into equal chunks every N pages, or define your own custom ranges for full control over how the document is divided.",
+      "Whether you call it splitting, separating, or breaking a PDF file apart, the result is the same — one document divided into multiple standalone PDF files.",
     ],
     howTo: [
       "Upload the PDF you want to split.",
@@ -88,6 +112,11 @@ export const tools: Tool[] = [
         question: "What if I only get one output file?",
         answer:
           "If your settings produce a single file, it downloads directly as a PDF instead of a ZIP.",
+      },
+      {
+        question: "Can I split a PDF file online for free?",
+        answer:
+          "Yes — splitting happens entirely in your browser, so it's free with no sign-up and no file limits.",
       },
     ],
   },
@@ -129,9 +158,18 @@ export const tools: Tool[] = [
       "Remove pages from a PDF online for free. Preview every page as a thumbnail and delete the ones you don't need in just a few clicks.",
     icon: "Trash2",
     category: "organize",
-    keywords: ["remove pdf pages", "delete pdf pages"],
+    keywords: [
+      "remove pdf pages",
+      "delete pdf pages",
+      "delete pages from pdf",
+      "erase pdf pages",
+      "cut pages from pdf",
+      "delete pages online",
+      "pdf pages remover",
+    ],
     about: [
       "Blank cover sheets, duplicate scans, or an outdated page in a contract — this tool lets you preview every page as a thumbnail and delete exactly the ones you don't need, leaving everything else untouched.",
+      "Whether you think of it as deleting, erasing, or cutting pages out of a PDF, the result is the same — those pages are gone and everything else stays untouched.",
     ],
     howTo: [
       "Upload the PDF you want to edit.",
@@ -148,6 +186,11 @@ export const tools: Tool[] = [
         question: "Can I undo a removal?",
         answer:
           "Click a marked page again to unmark it before saving. Once you save, upload the original file again to start over.",
+      },
+      {
+        question: "Can I erase or cut out just one page?",
+        answer:
+          "Yes — click just that page to mark it, then save. Only the pages you mark are removed.",
       },
     ],
   },
@@ -214,12 +257,20 @@ export const tools: Tool[] = [
     description:
       "Convert PDF text into a Microsoft Word (.docx) document you can edit.",
     metaDescription:
-      "Convert PDF to Word online for free. Turn a PDF into an editable .docx file you can open in Microsoft Word or Google Docs in seconds.",
+      "Convert PDF to Word online for free — no sign up. Turn a PDF into an editable .docx file you can open in Microsoft Word or Google Docs in seconds.",
     icon: "FileType",
     category: "convert",
-    keywords: ["pdf to word", "convert pdf to docx"],
+    keywords: [
+      "pdf to word",
+      "convert pdf to docx",
+      "pdf to doc",
+      "export pdf to word",
+      "free pdf to word converter",
+      "pdf to word converter no sign up",
+    ],
     about: [
       "Turn a locked-down PDF back into editable text. This tool extracts the words from every page and lays them out in a real .docx file, so you can pick up editing in Word or Google Docs.",
+      "Some call it exporting PDF to Word, others call it converting PDF to doc — either way, this free converter turns your file into an editable Word document in seconds, with no sign-up required.",
     ],
     howTo: [
       "Upload the PDF you want to convert.",
@@ -237,6 +288,11 @@ export const tools: Tool[] = [
         question: "Does it work on scanned PDFs?",
         answer:
           "It converts text that already exists in the PDF. Scanned image-only documents won't have text to extract.",
+      },
+      {
+        question: "Do I need to sign up or install anything?",
+        answer:
+          "No. Conversion happens right in your browser — no account, no software, and no sign-up required.",
       },
     ],
   },
@@ -308,12 +364,21 @@ export const tools: Tool[] = [
     description:
       "Add text boxes, highlights, and shapes to your PDF, then save the result.",
     metaDescription:
-      "Edit a PDF online for free. Add text boxes, highlights, and shapes directly on your PDF, then save the changes — no software to install.",
+      "Edit a PDF online for free — no sign up. Add text boxes, highlights, and shapes directly on your PDF, then save the changes — no software to install.",
     icon: "PenLine",
     category: "edit-sign",
-    keywords: ["edit pdf", "annotate pdf"],
+    keywords: [
+      "edit pdf",
+      "annotate pdf",
+      "pdf text editor",
+      "edit pdf online free",
+      "type in a pdf",
+      "write in a pdf",
+      "pdf editor no sign up",
+    ],
     about: [
       "Fill in a blank, leave a note, or highlight an important line — all without special software. Add text boxes and highlights directly on top of your PDF, then save a new copy.",
+      "Need to type in a PDF, write on a form, or mark up a document? This free PDF text editor works entirely in your browser — no sign-up, no software to install.",
     ],
     howTo: [
       "Upload the PDF you want to edit.",
@@ -332,6 +397,11 @@ export const tools: Tool[] = [
         question: "Do edits apply to every page?",
         answer:
           "Annotations are tracked per page — use the Prev/Next controls to move between pages and add edits to each one.",
+      },
+      {
+        question: "Can I use this to redact sensitive information?",
+        answer:
+          "You can draw a highlight or shape over sensitive text to visually cover it before sharing. It doesn't delete the underlying text, so for legal redaction that permanently removes hidden data, use a dedicated redaction tool.",
       },
     ],
   },
