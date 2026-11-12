@@ -12,8 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Vendored pdf.js worker copied into public/ at build time.
+    // Self-hosted worker/WASM files copied into public/vendor at build time.
     "public/**",
+    // Agent worktrees.
+    ".claude/**",
   ]),
 ]);
 
