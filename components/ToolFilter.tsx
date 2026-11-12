@@ -29,8 +29,8 @@ export default function ToolFilter() {
         type="search"
         value={q}
         onChange={(e) => apply(e.target.value)}
-        placeholder="Find a tool: compress, word, sign…"
-        className="w-full rounded-full border border-black/15 dark:border-white/15 bg-white dark:bg-zinc-900 pl-12 pr-4 py-3 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+        placeholder="Find a tool…"
+        className="w-full rounded-full border border-black/15 dark:border-white/15 bg-white dark:bg-zinc-900 pl-12 pr-4 py-2.5 sm:py-3 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
       />
     </label>
   );

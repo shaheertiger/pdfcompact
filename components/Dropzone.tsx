@@ -50,7 +50,7 @@ export default function Dropzone({
       }}
       onDragLeave={() => setIsDragging(false)}
       onDrop={onDrop}
-      className={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-6 py-8 sm:p-10 text-center cursor-pointer transition-colors ${
+      className={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-5 py-6 sm:p-10 text-center cursor-pointer transition-colors ${
         isDragging
           ? "border-red-500 bg-red-50 dark:bg-red-500/10"
           : "border-black/20 dark:border-white/20 hover:border-red-400"

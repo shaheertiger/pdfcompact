@@ -25,14 +25,14 @@ export default function SpanishLayout({ children }: LayoutProps<"/es">) {
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
-        <header className="border-b border-black/10 dark:border-white/10 bg-white/90 dark:bg-zinc-950/90 backdrop-blur sticky top-0 z-40">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-4">
+        <header className="border-b border-black/10 dark:border-white/10 bg-white dark:bg-zinc-950 sticky top-0 z-40">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-3">
             <Link href="/es" className="font-bold text-lg shrink-0" aria-label="PDFCompact en español">
               PDF<span className="text-red-600">Compact</span>
             </Link>
-            <nav aria-label="Principal" className="flex items-center gap-1 text-sm overflow-x-auto">
+            <nav aria-label="Principal" className="flex min-w-0 items-center gap-1 text-sm overflow-x-auto [scrollbar-width:none] -mr-2">
               {esTools.map((t) => (
-                <Link key={t.slug} href={`/es/${t.es!.slug}`} className="hidden sm:block px-3 py-2 rounded-md hover:bg-black/5 dark:hover:bg-white/10 font-medium whitespace-nowrap">
+                <Link key={t.slug} href={`/es/${t.es!.slug}`} className="px-2.5 sm:px-3 py-2 rounded-md hover:bg-black/5 dark:hover:bg-white/10 font-medium whitespace-nowrap">
                   {t.es!.name}
                 </Link>
               ))}

@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Menu } from "lucide-react";
 import { registry, groups } from "@/lib/registry";
 import ToolIcon from "@/components/ToolIcon";
+import MobileMenu from "@/components/MobileMenu";
 
 function ToolMenu({ columns }: { columns: string }) {
   return (
@@ -34,7 +34,7 @@ function ToolMenu({ columns }: { columns: string }) {
 
 export default function Header() {
   return (
-    <header className="border-b border-black/10 dark:border-white/10 bg-white/90 dark:bg-zinc-950/90 backdrop-blur sticky top-0 z-40">
+    <header className="border-b border-black/10 dark:border-white/10 bg-white dark:bg-zinc-950 sticky top-0 z-40">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-4">
         <Link href="/" className="font-bold text-lg shrink-0" aria-label="PDFCompact home">
           PDF<span className="text-red-600">Compact</span>
@@ -57,20 +57,7 @@ export default function Header() {
           <Link href="/how-it-works" className="px-3 py-2 rounded-md hover:bg-black/5 dark:hover:bg-white/10 font-medium">How it works</Link>
         </nav>
 
-        {/* Mobile: a no-JavaScript disclosure menu. */}
-        <details className="md:hidden group/menu">
-          <summary className="list-none cursor-pointer rounded-md p-2 -mr-2 hover:bg-black/5 dark:hover:bg-white/10 [&::-webkit-details-marker]:hidden" aria-label="Open menu">
-            <Menu className="h-6 w-6" aria-hidden="true" />
-          </summary>
-          <div className="absolute left-0 right-0 top-full max-h-[80vh] overflow-y-auto border-b border-black/10 dark:border-white/10 bg-white dark:bg-zinc-950 px-4 py-5 shadow-lg">
-            <ToolMenu columns="grid-cols-1 sm:grid-cols-2" />
-            <div className="mt-5 pt-4 border-t border-black/10 dark:border-white/10 flex gap-4 text-sm">
-              <Link href="/how-it-works" className="hover:text-red-600">How it works</Link>
-              <Link href="/about" className="hover:text-red-600">About</Link>
-              <Link href="/contact" className="hover:text-red-600">Contact</Link>
-            </div>
-          </div>
-        </details>
+        <MobileMenu />
       </div>
     </header>
   );

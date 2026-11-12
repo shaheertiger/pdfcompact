@@ -106,15 +106,15 @@ export default function Home() {
       <JsonLd data={jsonLd} />
 
       <section className="bg-gradient-to-b from-red-50 to-white dark:from-red-950/20 dark:to-zinc-950">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 pt-10 pb-8 sm:pt-16 sm:pb-12 text-center">
-          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-balance">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 pt-6 pb-5 sm:pt-16 sm:pb-12 text-center">
+          <h1 className="text-[1.6rem] leading-tight sm:text-5xl font-bold tracking-tight text-balance">
             Free PDF Tools — Compress, Merge, Convert and OCR in Your Browser
           </h1>
-          <p className="mt-4 text-base sm:text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
-            {registry.length} tools for every PDF job, plus image tools. Nothing is uploaded: your files are processed on
-            your own device. No sign-up, no watermark.
+          <p className="mt-3 sm:mt-4 text-sm sm:text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
+            {registry.length} tools for PDFs and images. Your files are processed on your own device, never
+            uploaded. No sign-up, no watermark.
           </p>
-          <ul className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-zinc-700 dark:text-zinc-300">
+          <ul className="mt-4 sm:mt-6 grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-x-3 gap-y-1.5 sm:gap-x-5 sm:gap-y-2 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 max-w-xs sm:max-w-none mx-auto text-left">
             <li className="flex items-center gap-1.5"><Lock className="h-4 w-4 text-red-600" aria-hidden="true" /> Nothing uploaded</li>
             <li className="flex items-center gap-1.5"><WifiOff className="h-4 w-4 text-red-600" aria-hidden="true" /> Works offline</li>
             <li className="flex items-center gap-1.5"><BadgeCheck className="h-4 w-4 text-red-600" aria-hidden="true" /> No watermark</li>
@@ -125,24 +125,24 @@ export default function Home() {
 
       <section id="tools" aria-label="All PDF tools" className="mx-auto max-w-6xl px-4 sm:px-6 pb-6 w-full scroll-mt-20">
         <ToolFilter />
-        <div className="grid gap-10 mt-6">
+        <div className="grid gap-8 sm:gap-10 mt-5 sm:mt-6">
           {groups.map((g) => (
             <div key={g.id} id={g.id} className="scroll-mt-20" data-group>
-              <h2 className="text-xl sm:text-2xl font-bold">{g.name}</h2>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1 mb-4">{g.blurb}</p>
-              <ul className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              <h2 className="text-lg sm:text-2xl font-bold">{g.name}</h2>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-0.5 mb-3 sm:mt-1 sm:mb-4">{g.blurb}</p>
+              <ul className="grid gap-2 sm:gap-3 grid-cols-2 lg:grid-cols-3">
                 {registry
                   .filter((t) => t.group === g.id)
                   .map((t) => (
                     <li key={t.slug} data-tool={`${t.name} ${t.short}`.toLowerCase()}>
                       <Link
                         href={`/${t.slug}`}
-                        className="group flex gap-3 h-full rounded-xl border border-black/10 dark:border-white/10 p-4 hover:border-red-400 hover:shadow-md transition-all bg-white dark:bg-zinc-900"
+                        className="group flex flex-col sm:flex-row gap-1.5 sm:gap-3 h-full rounded-xl border border-black/10 dark:border-white/10 p-3 sm:p-4 hover:border-red-400 hover:shadow-md transition-all bg-white dark:bg-zinc-900"
                       >
-                        <ToolIcon name={t.icon} className="h-6 w-6 shrink-0 text-red-600 mt-0.5" />
+                        <ToolIcon name={t.icon} className="h-5 w-5 sm:h-6 sm:w-6 shrink-0 text-red-600 sm:mt-0.5" />
                         <span>
-                          <span className="block font-semibold group-hover:text-red-600">{t.name}</span>
-                          <span className="block text-sm text-zinc-600 dark:text-zinc-400 mt-0.5">{t.short}</span>
+                          <span className="block text-sm sm:text-base font-semibold leading-snug group-hover:text-red-600">{t.name}</span>
+                          <span className="block text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-0.5 line-clamp-2 sm:line-clamp-none">{t.short}</span>
                         </span>
                       </Link>
                     </li>

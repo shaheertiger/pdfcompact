@@ -79,19 +79,30 @@ export function autoLink(html: string, currentSlug: string, locale: ContentLocal
       continue;
     }
     if (blocked > 0 || !part.trim()) continue;
-    let text = part;
+    // Segments we've already turned into links are never scanned again, so a
+    // shorter name ("Split PDF") can't nest a link inside a longer one
+    // ("Split PDF by Size").
+    const segs: { text: string; link: boolean }[] = [{ text: part, link: false }];
     for (const t of candidates) {
       if (linked.has(t.slug)) continue;
       const re = new RegExp(`\\b(${t.name.replace(/[.*+?^${}()|[\]\\&]/g, "\\$&")})\\b`, "i");
-      const m = text.match(re);
-      if (!m || m.index === undefined) continue;
-      text =
-        text.slice(0, m.index) +
-        `<a href="${t.href}">${m[1]}</a>` +
-        text.slice(m.index + m[1].length);
-      linked.add(t.slug);
+      for (let s = 0; s < segs.length; s++) {
+        if (segs[s].link) continue;
+        const m = segs[s].text.match(re);
+        if (!m || m.index === undefined) continue;
+        const { text } = segs[s];
+        segs.splice(
+          s,
+          1,
+          { text: text.slice(0, m.index), link: false },
+          { text: `<a href="${t.href}">${m[1]}</a>`, link: true },
+          { text: text.slice(m.index + m[1].length), link: false }
+        );
+        linked.add(t.slug);
+        break;
+      }
     }
-    parts[i] = text;
+    parts[i] = segs.map((x) => x.text).join("");
   }
   return parts.join("");
 }

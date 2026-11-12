@@ -27,7 +27,7 @@ const labels = {
     home: "Home",
     breadcrumb: "Breadcrumb",
     spanishHub: "",
-    pill: "Runs in your browser — your file is never uploaded",
+    pill: "Runs on your device — never uploaded",
     quickAnswer: "Quick answer",
     limitsHeading: (n: string) => `${n}: what it does and its limits`,
     faqHeading: (n: string) => `${n} FAQ`,
@@ -47,7 +47,7 @@ const labels = {
     home: "PDFCompact",
     breadcrumb: "Ruta de navegación",
     spanishHub: "Herramientas PDF en español",
-    pill: "Funciona en tu navegador: tu archivo nunca se sube",
+    pill: "Funciona en tu dispositivo: nunca se sube",
     quickAnswer: "Respuesta rápida",
     limitsHeading: (n: string) => `${n}: qué hace y sus límites`,
     faqHeading: (n: string) => `Preguntas frecuentes sobre ${n}`,
@@ -134,7 +134,7 @@ export default function ToolPage({ tool, locale = "en" }: { tool: ToolEntry; loc
     <div className="mx-auto max-w-5xl px-4 sm:px-6 pt-3 pb-10 sm:pt-6 w-full">
       <JsonLd data={jsonLd} />
 
-      <nav aria-label={L.breadcrumb} className="text-xs text-zinc-500 mb-3 flex items-center gap-1 overflow-hidden">
+      <nav aria-label={L.breadcrumb} className="hidden sm:flex text-xs text-zinc-500 mb-3 items-center gap-1 overflow-hidden">
         <Link href="/" className="hover:text-red-600">{L.home}</Link>
         <ChevronRight className="h-3 w-3 shrink-0" aria-hidden="true" />
         <Link href={groupHref} className="hover:text-red-600 truncate">{groupName}</Link>
@@ -143,13 +143,13 @@ export default function ToolPage({ tool, locale = "en" }: { tool: ToolEntry; loc
       </nav>
 
       {/* First fold: H1, one-line lead, the tool. */}
-      <header className="text-center max-w-3xl mx-auto mb-4 sm:mb-6">
-        <h1 className="flex items-center justify-center gap-2 text-2xl sm:text-4xl font-bold tracking-tight text-balance">
+      <header className="text-center max-w-3xl mx-auto mb-3 sm:mb-6">
+        <h1 className="flex items-center justify-center gap-2 text-[1.375rem] leading-tight sm:text-4xl font-bold tracking-tight text-balance">
           <ToolIcon name={tool.icon} className="hidden sm:block h-8 w-8 shrink-0 text-red-600" />
           <span>{c.h1}</span>
         </h1>
-        <p className="mt-2 text-sm sm:text-base text-zinc-600 dark:text-zinc-400">{c.lead}</p>
-        <p className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-500/10 rounded-full px-3 py-1">
+        <p className="mt-1.5 sm:mt-2 text-sm sm:text-base leading-snug text-zinc-600 dark:text-zinc-400">{c.lead}</p>
+        <p className="mt-2 inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-medium text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-500/10 rounded-full px-3 py-1">
           <Lock className="h-3.5 w-3.5" aria-hidden="true" />
           {L.pill}
         </p>
