@@ -168,7 +168,7 @@ for (const { tool, locale, fileSlug, dir } of pages) {
   const total = words(allText.replace(/[|#*`>-]{2,}/g, " "));
   const min = size === "main" ? 800 : 500;
   if (total < min) fail(slug, `${total} words (min ${min} for a ${size} tool)`);
-  if (total > 1900) warn.push(`${slug}: ${total} words; playbook range tops out near 1,500`);
+  if (total > 2300) warn.push(`${slug}: ${total} words; the playbook caps even the flagship (compress) near 2,200`);
 
   // Writing rules.
   for (const re of BANNED) if (re.test(allText) || re.test(title) || re.test(desc)) fail(slug, `banned claim matches ${re}`);
