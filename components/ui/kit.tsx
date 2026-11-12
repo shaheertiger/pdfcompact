@@ -84,7 +84,7 @@ export function FileBar({
 }) {
   const t = useStrings(kitStrings);
   return (
-    <div className="flex items-center justify-between gap-3 rounded-lg border border-black/10 dark:border-white/10 px-4 py-3 bg-zinc-50 dark:bg-zinc-800/50 mb-5">
+    <div className="flex items-center justify-between gap-3 rounded-lg border border-black/10 dark:border-white/10 px-4 py-1.5 bg-zinc-50 dark:bg-zinc-800/50 mb-5">
       <span className="text-sm truncate">
         <span className="font-medium">{name}</span>
         {detail && <span className="text-zinc-500"> · {detail}</span>}
@@ -92,7 +92,7 @@ export function FileBar({
       <button
         type="button"
         onClick={onReset}
-        className="shrink-0 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-red-600"
+        className="shrink-0 inline-flex min-h-10 items-center gap-1 rounded-md px-2 -mr-2 text-sm text-zinc-500 hover:text-red-600"
       >
         <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
         {t.changeFile}
