@@ -1,153 +1,151 @@
 "use client";
 
-import { useState } from "react";
-import { PDFDocument } from "pdf-lib";
-import { Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
 import Dropzone from "@/components/Dropzone";
-import { downloadBlob, bytesToBlob, baseName } from "@/lib/download";
-import { loadPdfjs, renderPageThumbnail } from "@/lib/pdfjs";
+import { ActionButton, ErrorNote, Field, FileBar, InfoNote, Progress, ResultPanel, inputClass, type ResultFile } from "@/components/ui/kit";
+import { baseName, formatBytes, isPdf, pdfBlob } from "@/lib/download";
+import { PdfLoadError, formatPages, loadEditable, pagesToPdf, tick, useThumbSource, type ThumbSource } from "@/lib/page-tools";
+import { PageGrid, QuickPick, StickyBar, usePageSelection } from "./PagePicker";
 
-type Page = {
-  index: number;
-  thumbnail: string;
-};
-
-export default function RemovePagesClient() {
+export default function DeletePagesClient() {
   const [file, setFile] = useState<File | null>(null);
-  const [pages, setPages] = useState<Page[]>([]);
-  const [toRemove, setToRemove] = useState<Set<number>>(new Set());
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { source, error: openError } = useThumbSource(file);
 
-  const onFiles = async (files: File[]) => {
-    const f = files[0];
+  if (!file) {
+    return (
+      <div>
+        <Dropzone
+          onFiles={(files) => {
+            setError(null);
+            if (!isPdf(files[0])) return setError("That isn't a PDF. Choose a .pdf file.");
+            setFile(files[0]);
+          }}
+        />
+        <ErrorNote>{error}</ErrorNote>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <FileBar
+        name={file.name}
+        detail={source ? `${source.pageCount} pages · ${formatBytes(file.size)}` : formatBytes(file.size)}
+        onReset={() => setFile(null)}
+      />
+      {openError && <ErrorNote>{openError}</ErrorNote>}
+      {!source && !openError && <InfoNote>Reading the PDF…</InfoNote>}
+      {source && <Editor key={source.pageCount + file.name} file={file} source={source} onReset={() => setFile(null)} />}
+    </div>
+  );
+}
+
+function Editor({ file, source, onReset }: { file: File; source: ThumbSource; onReset: () => void }) {
+  const n = source.pageCount;
+  const sel = usePageSelection(n);
+  const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<{ file: ResultFile; removed: string; removedCount: number; left: number } | null>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
+
+  const count = sel.selected.size;
+  const all = count === n;
+
+  const handleDelete = async () => {
+    if (count === 0 || all) return;
+    setBusy(true);
     setError(null);
-    setIsLoading(true);
+    setResult(null);
+    setProgress(0.1);
     try {
-      const bytes = await f.arrayBuffer();
-      const pdfjs = await loadPdfjs();
-      const pdf = await pdfjs.getDocument({ data: bytes }).promise;
-      const loaded: Page[] = [];
-      for (let i = 1; i <= pdf.numPages; i++) {
-        loaded.push({ index: i - 1, thumbnail: await renderPageThumbnail(pdf, i) });
-      }
-      setFile(f);
-      setPages(loaded);
-      setToRemove(new Set());
+      await tick();
+      const doc = await loadEditable(await file.arrayBuffer());
+      setProgress(0.5);
+      await tick();
+      const keep = Array.from({ length: n }, (_, i) => i).filter((i) => !sel.selected.has(i));
+      const bytes = await pagesToPdf(doc, keep);
+      setProgress(1);
+      setResult({
+        file: { blob: pdfBlob(bytes), name: `${baseName(file.name)}-trimmed.pdf` },
+        removed: formatPages(sel.selected),
+        removedCount: sel.selected.size,
+        left: keep.length,
+      });
+      requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }));
     } catch (e) {
       console.error(e);
-      setError("Couldn't read this PDF. It may be corrupted or password protected.");
+      setError(e instanceof PdfLoadError ? e.message : "Couldn't save the PDF. Try re-saving it with Print to PDF first.");
     } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const toggle = (index: number) => {
-    setToRemove((prev) => {
-      const next = new Set(prev);
-      if (next.has(index)) next.delete(index);
-      else next.add(index);
-      return next;
-    });
-  };
-
-  const handleSave = async () => {
-    if (!file) return;
-    if (toRemove.size === pages.length) {
-      setError("You can't remove every page — at least one must remain.");
-      return;
-    }
-    setIsSaving(true);
-    setError(null);
-    try {
-      const bytes = await file.arrayBuffer();
-      const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
-      const keepIndices = pages.map((p) => p.index).filter((i) => !toRemove.has(i));
-      const out = await PDFDocument.create();
-      const copied = await out.copyPages(src, keepIndices);
-      copied.forEach((p) => out.addPage(p));
-      const outBytes = await out.save();
-      downloadBlob(bytesToBlob(outBytes, "application/pdf"), `${baseName(file.name)}-edited.pdf`);
-    } catch (e) {
-      console.error(e);
-      setError("Something went wrong while saving the PDF.");
-    } finally {
-      setIsSaving(false);
+      setBusy(false);
     }
   };
 
   return (
     <div>
-      {!file && (
-        <Dropzone onFiles={onFiles} label="Drop a PDF here" hint="or click to browse" />
-      )}
+      <Field label="Pages to delete" hint="Tap pages below, or type numbers and ranges like 2, 5-7. Shift-click selects a run.">
+        <input
+          className={`${inputClass} text-base sm:text-sm`}
+          value={sel.text}
+          placeholder="e.g. 2, 5-7"
+          autoComplete="off"
+          onChange={(e) => {
+            sel.onText(e.target.value);
+            setResult(null);
+          }}
+        />
+      </Field>
+      {sel.textError && <ErrorNote>{sel.textError}</ErrorNote>}
+      <div className="mt-3">
+        <QuickPick
+          pageCount={n}
+          onPick={(s) => {
+            sel.apply(s);
+            setResult(null);
+          }}
+        />
+      </div>
 
-      {isLoading && <p className="mt-4 text-sm text-zinc-500">Loading pages…</p>}
+      <div ref={resultRef}>
+        {result && (
+          <ResultPanel
+            title="Pages deleted"
+            files={[result.file]}
+            originalSize={file.size}
+            note={`Removed ${result.removedCount === 1 ? "page" : "pages"} ${result.removed}. ${result.left} ${result.left === 1 ? "page" : "pages"} left.`}
+            onReset={onReset}
+            resetLabel="Edit another PDF"
+          />
+        )}
+      </div>
+      <ErrorNote>{error}</ErrorNote>
 
-      {error && (
-        <p className="mt-4 text-sm text-red-600 bg-red-50 dark:bg-red-500/10 rounded-lg px-4 py-2">
-          {error}
-        </p>
-      )}
+      <PageGrid
+        source={source}
+        selected={sel.selected}
+        variant="delete"
+        onToggle={(i, shift) => {
+          sel.toggle(i, shift);
+          setResult(null);
+        }}
+      />
 
-      {file && pages.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm text-zinc-500">
-              Click pages to mark them for removal · {toRemove.size} selected
-            </span>
-            <button
-              type="button"
-              onClick={() => {
-                setFile(null);
-                setPages([]);
-              }}
-              className="text-sm text-zinc-500 hover:text-red-600"
-            >
-              Change file
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {pages.map((page) => {
-              const marked = toRemove.has(page.index);
-              return (
-                <button
-                  type="button"
-                  key={page.index}
-                  onClick={() => toggle(page.index)}
-                  className={`relative rounded-lg border-2 overflow-hidden text-left transition-all ${
-                    marked
-                      ? "border-red-500 opacity-40"
-                      : "border-black/10 dark:border-white/10 hover:border-red-400"
-                  }`}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={page.thumbnail} alt={`Page ${page.index + 1}`} className="w-full block" />
-                  <span className="absolute bottom-1 right-1 bg-black/70 text-white text-xs rounded px-1.5 py-0.5">
-                    {page.index + 1}
-                  </span>
-                  {marked && (
-                    <span className="absolute inset-0 flex items-center justify-center bg-black/10">
-                      <Trash2 className="h-8 w-8 text-red-600" aria-hidden="true" />
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={isSaving || toRemove.size === 0}
-            className="mt-6 rounded-full bg-red-600 text-white px-6 py-2.5 font-semibold hover:bg-red-700 disabled:opacity-40 transition-colors"
-          >
-            {isSaving ? "Saving…" : `Remove ${toRemove.size || ""} page${toRemove.size === 1 ? "" : "s"}`}
-          </button>
+      <StickyBar>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+          <ActionButton onClick={handleDelete} busy={busy} disabled={count === 0 || all || !!sel.textError}>
+            {count === 0 ? "Delete pages" : `Delete ${count} ${count === 1 ? "page" : "pages"}`}
+          </ActionButton>
+          <span className="text-sm text-zinc-600 dark:text-zinc-400 text-center sm:text-left">
+            {all
+              ? "You can't delete every page. Leave at least one."
+              : count === 0
+                ? `Tap the pages you want to remove (${n} pages).`
+                : `${n - count} of ${n} pages will be kept.`}
+          </span>
         </div>
-      )}
+        {busy && <Progress value={progress} label="Saving" />}
+      </StickyBar>
     </div>
   );
 }
