@@ -1,170 +1,172 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { PDFDocument } from "pdf-lib";
-import { X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Plus } from "lucide-react";
 import Dropzone from "@/components/Dropzone";
-import { downloadBlob, bytesToBlob } from "@/lib/download";
+import { ActionButton, ErrorNote, Progress, ResultPanel, SecondaryButton, type ResultFile } from "@/components/ui/kit";
+import { baseName, formatBytes, pdfBlob } from "@/lib/download";
 import { nextId } from "@/lib/id";
+import { isBrowserImage, isHeic } from "@/lib/image-utils";
+import { defaultPdfPageOptions, imagesToPdf, type PdfPageOptions } from "@/lib/images-to-pdf";
+import ImageOrderList, { type OrderItem } from "./ImageOrderList";
+import ImagePdfOptions from "./ImagePdfOptions";
 
-type ImageItem = {
-  id: string;
-  file: File;
-  previewUrl: string;
-};
+const ACCEPT = "image/jpeg,image/png,image/webp,image/gif,image/bmp,image/avif,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.gif,.bmp,.avif,.heic,.heif";
 
-async function toPngBytes(file: File): Promise<Uint8Array> {
-  const img = new Image();
-  const url = URL.createObjectURL(file);
-  try {
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve();
-      img.onerror = () => reject(new Error("Failed to load image"));
-      img.src = url;
-    });
-    const canvas = document.createElement("canvas");
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error("Canvas not supported");
-    ctx.drawImage(img, 0, 0);
-    const blob: Blob = await new Promise((resolve, reject) =>
-      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("toBlob failed"))), "image/png")
-    );
-    return new Uint8Array(await blob.arrayBuffer());
-  } finally {
-    URL.revokeObjectURL(url);
-  }
-}
-
-export default function ImageToPdfClient() {
-  const [images, setImages] = useState<ImageItem[]>([]);
-  const [isConverting, setIsConverting] = useState(false);
+export default function JpgToPdfClient() {
+  const [items, setItems] = useState<OrderItem[]>([]);
+  const [opts, setOpts] = useState<PdfPageOptions>(defaultPdfPageOptions);
+  const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [result, setResult] = useState<{ file: ResultFile; pages: number; inputSize: number } | null>(null);
+  const urls = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    const set = urls.current;
+    return () => set.forEach((u) => URL.revokeObjectURL(u));
+  }, []);
 
   const addFiles = useCallback((files: File[]) => {
     setError(null);
-    const imgFiles = files.filter((f) => f.type.startsWith("image/"));
-    setImages((prev) => [
-      ...prev,
-      ...imgFiles.map((file) => ({
-        id: nextId("img"),
-        file,
-        previewUrl: URL.createObjectURL(file),
-      })),
-    ]);
+    setResult(null);
+    const ok = files.filter((f) => isBrowserImage(f) || isHeic(f));
+    const skipped = files.length - ok.length;
+    if (skipped) setError(`${skipped} file${skipped > 1 ? "s" : ""} skipped: only JPG, PNG, WebP, GIF, BMP, AVIF and HEIC images can go in.`);
+    const added = ok.map((file) => {
+      const url = isHeic(file) ? null : URL.createObjectURL(file);
+      if (url) urls.current.add(url);
+      return { id: nextId("img"), file, url, rotation: 0 as const };
+    });
+    setItems((prev) => [...prev, ...added]);
   }, []);
 
-  const removeImage = (id: string) => {
-    setImages((prev) => prev.filter((i) => i.id !== id));
-  };
-
-  const move = (from: number, to: number) => {
-    setImages((prev) => {
-      if (to < 0 || to >= prev.length) return prev;
-      const next = [...prev];
-      const [item] = next.splice(from, 1);
-      next.splice(to, 0, item);
-      return next;
+  const remove = (id: string) => {
+    setResult(null);
+    setItems((prev) => {
+      const it = prev.find((p) => p.id === id);
+      if (it?.url) {
+        URL.revokeObjectURL(it.url);
+        urls.current.delete(it.url);
+      }
+      return prev.filter((p) => p.id !== id);
     });
   };
 
-  const handleConvert = async () => {
-    if (images.length === 0) return;
-    setIsConverting(true);
+  const reset = () => {
+    urls.current.forEach((u) => URL.revokeObjectURL(u));
+    urls.current.clear();
+    setItems([]);
+    setResult(null);
     setError(null);
+    setProgress(0);
+  };
+
+  const convert = async () => {
+    if (!items.length) return;
+    setBusy(true);
+    setError(null);
+    setResult(null);
+    setProgress(0);
     try {
-      const doc = await PDFDocument.create();
-      for (const { file } of images) {
-        let embedded;
-        if (file.type === "image/jpeg" || file.type === "image/jpg") {
-          embedded = await doc.embedJpg(await file.arrayBuffer());
-        } else if (file.type === "image/png") {
-          embedded = await doc.embedPng(await file.arrayBuffer());
-        } else {
-          embedded = await doc.embedPng(await toPngBytes(file));
-        }
-        const page = doc.addPage([embedded.width, embedded.height]);
-        page.drawImage(embedded, { x: 0, y: 0, width: embedded.width, height: embedded.height });
-      }
-      const bytes = await doc.save();
-      downloadBlob(bytesToBlob(bytes, "application/pdf"), "images.pdf");
+      const { bytes, pageCount } = await imagesToPdf(
+        items.map((it) => ({ file: it.file, rotation: it.rotation })),
+        opts,
+        (done, total) => setProgress(done / total)
+      );
+      const name = items.length === 1 ? `${baseName(items[0].file.name)}.pdf` : "images.pdf";
+      setResult({
+        file: { blob: pdfBlob(bytes), name },
+        pages: pageCount,
+        inputSize: items.reduce((n, it) => n + it.file.size, 0),
+      });
     } catch (e) {
       console.error(e);
-      setError("Couldn't convert these images. Try a different file format (JPG, PNG, or WebP).");
+      setError(e instanceof Error ? e.message : "Couldn't make the PDF. Try fewer or smaller images.");
     } finally {
-      setIsConverting(false);
+      setBusy(false);
     }
   };
 
+  const total = items.reduce((n, it) => n + it.file.size, 0);
+
   return (
     <div>
-      <Dropzone
-        accept="image/*"
-        multiple
-        onFiles={addFiles}
-        label="Drop images here"
-        hint="or click to browse (JPG, PNG, WebP)"
-      />
-
-      {error && (
-        <p className="mt-4 text-sm text-red-600 bg-red-50 dark:bg-red-500/10 rounded-lg px-4 py-2">
-          {error}
-        </p>
-      )}
-
-      {images.length > 0 && (
-        <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {images.map((img, i) => (
-            <div
-              key={img.id}
-              draggable
-              onDragStart={() => setDragIndex(i)}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={() => {
-                if (dragIndex !== null && dragIndex !== i) move(dragIndex, i);
-                setDragIndex(null);
-              }}
-              className="relative rounded-lg border border-black/10 dark:border-white/10 overflow-hidden cursor-move bg-white dark:bg-zinc-800 shadow-sm"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img.previewUrl} alt={img.file.name} className="w-full h-32 object-cover block" />
-              <span className="absolute bottom-1 left-1 bg-black/70 text-white text-xs rounded px-1.5 py-0.5">
-                {i + 1}
-              </span>
-              <button
-                type="button"
-                onClick={() => removeImage(img.id)}
-                className="absolute top-1 right-1 bg-black/70 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hover:bg-red-600"
-                aria-label="Remove"
-              >
-                <X className="h-3 w-3" aria-hidden="true" />
-              </button>
+      {items.length === 0 ? (
+        <Dropzone
+          accept={ACCEPT}
+          multiple
+          onFiles={addFiles}
+          label="Drop photos or images here"
+          hint="JPG, PNG, WebP or HEIC · pick several at once"
+        />
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <p className="text-sm">
+              <strong>{items.length}</strong> image{items.length > 1 ? "s" : ""} · {formatBytes(total)} · one page each
+            </p>
+            <div className="flex gap-2">
+              <label className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-black/15 dark:border-white/20 px-4 text-sm font-medium hover:border-red-400 hover:text-red-600 cursor-pointer">
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                Add more
+                <input
+                  type="file"
+                  accept={ACCEPT}
+                  multiple
+                  className="sr-only"
+                  onChange={(e) => {
+                    if (e.target.files) addFiles(Array.from(e.target.files));
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+              <SecondaryButton onClick={reset}>Clear all</SecondaryButton>
             </div>
-          ))}
-        </div>
+          </div>
+          <ImageOrderList
+            items={items}
+            onChange={(next) => {
+              setResult(null);
+              setItems(next);
+            }}
+            onRemove={remove}
+          />
+          <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+            Drag to reorder, or use the arrows. The first image becomes page 1.
+          </p>
+          <div className="mt-5 rounded-xl border border-black/10 dark:border-white/10 p-4">
+            <ImagePdfOptions
+              value={opts}
+              onChange={(v) => {
+                setResult(null);
+                setOpts(v);
+              }}
+            />
+          </div>
+          <div className="mt-5">
+            <ActionButton onClick={convert} busy={busy} disabled={!items.length}>
+              {busy ? "Making PDF…" : `Convert ${items.length} image${items.length > 1 ? "s" : ""} to PDF`}
+            </ActionButton>
+          </div>
+          {busy && <Progress value={progress} label={`Adding image ${Math.min(items.length, Math.floor(progress * items.length) + 1)} of ${items.length}`} />}
+        </>
       )}
-
-      <div className="mt-6 flex items-center gap-3">
-        <button
-          type="button"
-          onClick={handleConvert}
-          disabled={images.length === 0 || isConverting}
-          className="rounded-full bg-red-600 text-white px-6 py-2.5 font-semibold hover:bg-red-700 disabled:opacity-40 transition-colors"
-        >
-          {isConverting ? "Converting…" : `Convert ${images.length || ""} image${images.length === 1 ? "" : "s"} to PDF`}
-        </button>
-        {images.length > 0 && (
-          <button
-            type="button"
-            onClick={() => setImages([])}
-            className="text-sm text-zinc-500 hover:text-red-600"
-          >
-            Clear all
-          </button>
-        )}
-      </div>
+      <ErrorNote>{error}</ErrorNote>
+      {result && (
+        <ResultPanel
+          title={`PDF ready: ${result.pages} page${result.pages > 1 ? "s" : ""}`}
+          files={[result.file]}
+          originalSize={result.inputSize}
+          note={
+            opts.quality === "original"
+              ? "Your photos are inside the PDF at full quality, so it is about as big as the images. Need it smaller? Choose Balanced or Smaller file and convert again."
+              : "Photos were scaled and re-saved as JPEG to keep the PDF small."
+          }
+          onReset={reset}
+          resetLabel="Start over"
+        />
+      )}
     </div>
   );
 }
