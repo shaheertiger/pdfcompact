@@ -4,7 +4,8 @@
  * side, so nothing is re-rendered. Page rotation is respected: "left" means
  * the left of the page as you see it, not as it's stored.
  */
-import { PDFDocument, type PDFPage } from "pdf-lib";
+import { PDFDocument, type PDFPage } from "@cantoo/pdf-lib";
+import { loadEditable } from "@/lib/pdf-edit";
 
 export type Cut = "vertical" | "horizontal";
 
@@ -59,7 +60,7 @@ export async function splitInHalf(
   opts: HalfOptions,
   onProgress?: (done: number, total: number) => Promise<void> | void,
 ): Promise<{ bytes: Uint8Array; pagesIn: number; pagesOut: number }> {
-  const src = await PDFDocument.load(bytes);
+  const src = await loadEditable(bytes);
   const out = await PDFDocument.create();
   const n = src.getPageCount();
   // Copy everything in one call so fonts and images shared between pages are stored once.

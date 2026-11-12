@@ -5,6 +5,7 @@
  * negations. Also builds the redline PDF and the plain-text report.
  */
 import type { PdfDoc } from "@/lib/pdfjs";
+import { loadEditable } from "@/lib/pdf-edit";
 
 export type Rect = [number, number, number, number]; // PDF user space: x1, y1, x2, y2
 
@@ -775,8 +776,8 @@ export async function buildRedline(
   nameA: string,
   nameB: string,
 ): Promise<Uint8Array> {
-  const { PDFDocument, StandardFonts, rgb, PDFName, PDFString, PDFHexString, PDFArray } = await import("pdf-lib");
-  const doc = await PDFDocument.load(changedBytes);
+  const { StandardFonts, rgb, PDFName, PDFString, PDFHexString, PDFArray } = await import("@cantoo/pdf-lib");
+  const doc = await loadEditable(changedBytes);
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
   const charset = new Set(font.getCharacterSet());

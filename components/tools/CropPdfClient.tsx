@@ -14,6 +14,7 @@ import {
   SecondaryButton,
   type ResultFile,
 } from "@/components/ui/kit";
+import { PdfOpenError } from "@/lib/pdf-edit";
 import { baseName, isPdf, pdfBlob } from "@/lib/download";
 import { openPdf, renderPageToCanvas, type PdfDoc } from "@/lib/pdfjs";
 import { PT_PER_IN, PT_PER_MM, pagesInScope, type Margins, type Scope } from "@/lib/crop";
@@ -223,8 +224,8 @@ export default function CropPdfClient() {
       });
     } catch (e) {
       setError(
-        e instanceof Error && /encrypt/i.test(e.message)
-          ? "This PDF has a password or edit restrictions, so it can't be cropped. Remove the protection first."
+        e instanceof PdfOpenError
+          ? e.message
           : e instanceof Error && e.message === "none"
             ? "There are no pages in that selection (a one-page file has no even pages)."
             : "Couldn't crop this PDF. It may be damaged. Try re-saving it with Print to PDF first.",

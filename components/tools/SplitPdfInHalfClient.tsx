@@ -12,6 +12,7 @@ import {
   Segmented,
   type ResultFile,
 } from "@/components/ui/kit";
+import { editErrorMessage } from "@/lib/pdf-edit";
 import { baseName, isPdf, pdfBlob } from "@/lib/download";
 import { openPdf, renderPageToCanvas, type PdfDoc } from "@/lib/pdfjs";
 import type { Cut } from "@/lib/split-half";
@@ -84,9 +85,7 @@ export default function SplitPdfInHalfClient() {
       });
     } catch (e) {
       setError(
-        e instanceof Error && /encrypt/i.test(e.message)
-          ? "This PDF has a password or edit restrictions, so its pages can't be changed. Remove the protection first."
-          : "Couldn't split this PDF. It may be damaged. Try re-saving it with Print to PDF first.",
+        editErrorMessage(e, "Couldn't split this PDF. It may be damaged. Try re-saving it with Print to PDF first."),
       );
     } finally {
       setBusy(false);

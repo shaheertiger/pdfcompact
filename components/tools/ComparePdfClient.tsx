@@ -13,6 +13,7 @@ import {
   SecondaryButton,
   type ResultFile,
 } from "@/components/ui/kit";
+import { PdfOpenError } from "@/lib/pdf-edit";
 import { baseName, bytesToBlob, downloadBlob, isPdf, pdfBlob } from "@/lib/download";
 import { openPdf, renderPageToCanvas, type PdfDoc } from "@/lib/pdfjs";
 import {
@@ -209,10 +210,9 @@ export default function ComparePdfClient() {
       const out = await buildRedline(bytes, result, slotA.file.name, slotB.file.name);
       setRedline([{ blob: pdfBlob(out), name: `${baseName(slotB.file.name)}-redline.pdf` }]);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "";
       setRedlineError(
-        /encrypt/i.test(msg)
-          ? "The Changed file is encrypted (it has an owner password), so we can't draw on it. The comparison above and the .txt report still work."
+        e instanceof PdfOpenError
+          ? `${e.message} The comparison above and the .txt report still work.`
           : "Couldn't build the redline PDF from this file. The comparison above and the .txt report still work.",
       );
     } finally {

@@ -2,7 +2,8 @@
  * Crop helpers: margins are given as the page looks on screen (top, right,
  * bottom, left in points) and mapped onto the page's unrotated user space.
  */
-import type { PDFPage } from "pdf-lib";
+import type { PDFPage } from "@cantoo/pdf-lib";
+import { loadEditable } from "@/lib/pdf-edit";
 import type { PdfDoc } from "@/lib/pdfjs";
 
 export type Margins = { top: number; right: number; bottom: number; left: number };
@@ -74,8 +75,7 @@ export async function applyCrop(
   pages: number[],
   permanent: boolean,
 ): Promise<{ bytes: Uint8Array; boxes: Box[] }> {
-  const { PDFDocument } = await import("pdf-lib");
-  const doc = await PDFDocument.load(bytes);
+  const doc = await loadEditable(bytes);
   const boxes: Box[] = [];
   for (const i of pages) {
     const page = doc.getPage(i);

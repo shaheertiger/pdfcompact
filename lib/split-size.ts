@@ -7,7 +7,8 @@
  * over the limit is rebuilt with a tighter budget. A single page bigger than
  * the limit goes into a part of its own and is reported.
  */
-import { PDFArray, PDFDict, PDFDocument, PDFName, PDFRef, type PDFObject } from "pdf-lib";
+// The @cantoo fork: same API as pdf-lib, and it can open permissions-only encrypted files.
+import { PDFArray, PDFDict, PDFDocument, PDFName, PDFRef, type PDFObject } from "@cantoo/pdf-lib";
 
 export type SizePart = {
   /** 0-based page indices. */

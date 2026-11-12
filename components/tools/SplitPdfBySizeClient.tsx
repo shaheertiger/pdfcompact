@@ -15,7 +15,7 @@ import {
   inputClass,
 } from "@/components/ui/kit";
 import { baseName, downloadBlob, isPdf, pdfBlob, zipFiles } from "@/lib/download";
-import { PDFDocument } from "pdf-lib";
+import { editErrorMessage, loadEditable } from "@/lib/pdf-edit";
 import { MB, formatMB, splitBySize, type SizePart } from "@/lib/split-size";
 
 const PRESETS = [2, 5, 10, 20, 25];
@@ -57,15 +57,11 @@ export default function SplitPdfBySizeClient() {
     setParts(null);
     setZip(null);
     try {
-      const doc = await PDFDocument.load(await f.arrayBuffer());
+      const doc = await loadEditable(await f.arrayBuffer());
       setLoaded({ file: f, pages: doc.getPageCount() });
     } catch (e) {
       setLoaded(null);
-      setError(
-        e instanceof Error && /encrypt/i.test(e.message)
-          ? "This PDF is password-protected. Remove the password first, then try again."
-          : "Couldn't read this PDF. It may be damaged or not a real PDF.",
-      );
+      setError(editErrorMessage(e, "Couldn't read this PDF. It may be damaged or not a real PDF."));
     }
   };
 
@@ -77,7 +73,7 @@ export default function SplitPdfBySizeClient() {
     setZip(null);
     setProgress(0);
     try {
-      const src = await PDFDocument.load(await loaded.file.arrayBuffer());
+      const src = await loadEditable(await loaded.file.arrayBuffer());
       const limit = Math.floor(limitMB * MB);
       const res = await splitBySize(src, limit, async (done, total, label) => {
         setProgress((done / total) * 0.95);
@@ -94,8 +90,13 @@ export default function SplitPdfBySizeClient() {
       setRemovedLinks(res.removedLinks);
       setUsedLimit(limit);
       setProgress(1);
-    } catch {
-      setError("Couldn't split this PDF. It may be damaged. Try re-saving it with Print to PDF, then split again.");
+    } catch (e) {
+      setError(
+        editErrorMessage(
+          e,
+          "Couldn't split this PDF. It may be damaged. Try re-saving it with Print to PDF, then split again.",
+        ),
+      );
     } finally {
       setBusy(false);
     }
