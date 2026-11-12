@@ -1,149 +1,196 @@
 "use client";
 
-import { useState } from "react";
-import { PDFDocument } from "pdf-lib";
-import { Check } from "lucide-react";
+import { useRef, useState } from "react";
 import Dropzone from "@/components/Dropzone";
-import { downloadBlob, bytesToBlob, baseName } from "@/lib/download";
-import { loadPdfjs, renderPageThumbnail } from "@/lib/pdfjs";
+import {
+  ActionButton,
+  ErrorNote,
+  Field,
+  FileBar,
+  InfoNote,
+  Progress,
+  ResultPanel,
+  Segmented,
+  inputClass,
+  type ResultFile,
+} from "@/components/ui/kit";
+import { baseName, formatBytes, isPdf, pdfBlob, zipFiles } from "@/lib/download";
+import { PdfLoadError, formatPages, loadEditable, pagesToPdf, tick, useThumbSource, type ThumbSource } from "@/lib/page-tools";
+import { PageGrid, QuickPick, StickyBar, usePageSelection } from "./PagePicker";
 
-type Page = {
-  index: number;
-  thumbnail: string;
-};
+type Output = "single" | "separate";
 
-export default function ExtractClient() {
+export default function ExtractPagesClient() {
   const [file, setFile] = useState<File | null>(null);
-  const [pages, setPages] = useState<Page[]>([]);
-  const [selected, setSelected] = useState<Set<number>>(new Set());
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { source, error: openError } = useThumbSource(file);
 
-  const onFiles = async (files: File[]) => {
-    const f = files[0];
-    setError(null);
-    setIsLoading(true);
-    try {
-      const bytes = await f.arrayBuffer();
-      const pdfjs = await loadPdfjs();
-      const pdf = await pdfjs.getDocument({ data: bytes }).promise;
-      const loaded: Page[] = [];
-      for (let i = 1; i <= pdf.numPages; i++) {
-        loaded.push({ index: i - 1, thumbnail: await renderPageThumbnail(pdf, i) });
-      }
-      setFile(f);
-      setPages(loaded);
-      setSelected(new Set());
-    } catch (e) {
-      console.error(e);
-      setError("Couldn't read this PDF. It may be corrupted or password protected.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  if (!file) {
+    return (
+      <div>
+        <Dropzone
+          onFiles={(files) => {
+            setError(null);
+            if (!isPdf(files[0])) return setError("That isn't a PDF. Choose a .pdf file.");
+            setFile(files[0]);
+          }}
+        />
+        <ErrorNote>{error}</ErrorNote>
+      </div>
+    );
+  }
 
-  const toggle = (index: number) => {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(index)) next.delete(index);
-      else next.add(index);
-      return next;
-    });
-  };
+  return (
+    <div>
+      <FileBar
+        name={file.name}
+        detail={source ? `${source.pageCount} pages · ${formatBytes(file.size)}` : formatBytes(file.size)}
+        onReset={() => setFile(null)}
+      />
+      {openError && <ErrorNote>{openError}</ErrorNote>}
+      {!source && !openError && <InfoNote>Reading the PDF…</InfoNote>}
+      {source && <Editor key={source.pageCount + file.name} file={file} source={source} onReset={() => setFile(null)} />}
+    </div>
+  );
+}
+
+function Editor({ file, source, onReset }: { file: File; source: ThumbSource; onReset: () => void }) {
+  const n = source.pageCount;
+  const sel = usePageSelection(n);
+  const [output, setOutput] = useState<Output>("single");
+  const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<{ file: ResultFile; note: string } | null>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
+  const count = sel.selected.size;
 
   const handleExtract = async () => {
-    if (!file || selected.size === 0) return;
-    setIsSaving(true);
+    if (count === 0) return;
+    setBusy(true);
     setError(null);
+    setResult(null);
+    setProgress(0.05);
     try {
-      const bytes = await file.arrayBuffer();
-      const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
-      const orderedIndices = pages.map((p) => p.index).filter((i) => selected.has(i));
-      const out = await PDFDocument.create();
-      const copied = await out.copyPages(src, orderedIndices);
-      copied.forEach((p) => out.addPage(p));
-      const outBytes = await out.save();
-      downloadBlob(bytesToBlob(outBytes, "application/pdf"), `${baseName(file.name)}-extracted.pdf`);
+      await tick();
+      const doc = await loadEditable(await file.arrayBuffer());
+      const pages = [...sel.selected].sort((a, b) => a - b);
+      const base = baseName(file.name);
+      const list = formatPages(pages);
+      if (output === "single" || pages.length === 1) {
+        const bytes = await pagesToPdf(doc, pages);
+        const contiguous = pages[pages.length - 1] - pages[0] === pages.length - 1;
+        const name =
+          pages.length === 1
+            ? `${base}-page-${pages[0] + 1}.pdf`
+            : contiguous
+              ? `${base}-pages-${pages[0] + 1}-${pages[pages.length - 1] + 1}.pdf`
+              : `${base}-extract.pdf`;
+        setResult({
+          file: { blob: pdfBlob(bytes), name },
+          note: `${pages.length} ${pages.length === 1 ? "page" : "pages"} (${list}) in one PDF.`,
+        });
+      } else {
+        const files: { name: string; data: Uint8Array }[] = [];
+        for (let k = 0; k < pages.length; k++) {
+          files.push({ name: `${base}-page-${pages[k] + 1}.pdf`, data: await pagesToPdf(doc, [pages[k]]) });
+          setProgress(0.1 + (0.8 * (k + 1)) / pages.length);
+          await tick();
+        }
+        const zip = await zipFiles(files);
+        setResult({
+          file: { blob: zip, name: `${base}-pages.zip` },
+          note: `${pages.length} separate PDFs (${list}) in one ZIP.`,
+        });
+      }
+      setProgress(1);
+      requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }));
     } catch (e) {
       console.error(e);
-      setError("Something went wrong while extracting pages.");
+      setError(e instanceof PdfLoadError ? e.message : "Couldn't save the pages. Try re-saving the PDF with Print to PDF first.");
     } finally {
-      setIsSaving(false);
+      setBusy(false);
     }
   };
 
   return (
     <div>
-      {!file && (
-        <Dropzone onFiles={onFiles} label="Drop a PDF here" hint="or click to browse" />
-      )}
+      <Field label="Pages to extract" hint="Tap pages below, or type numbers and ranges like 1-3, 8. Shift-click selects a run.">
+        <input
+          className={`${inputClass} text-base sm:text-sm`}
+          value={sel.text}
+          placeholder="e.g. 1-3, 8"
+          autoComplete="off"
+          onChange={(e) => {
+            sel.onText(e.target.value);
+            setResult(null);
+          }}
+        />
+      </Field>
+      {sel.textError && <ErrorNote>{sel.textError}</ErrorNote>}
+      <div className="mt-3">
+        <QuickPick
+          pageCount={n}
+          includeAll
+          onPick={(s) => {
+            sel.apply(s);
+            setResult(null);
+          }}
+        />
+      </div>
+      <div className="mt-4">
+        <Segmented<Output>
+          label="Save as"
+          value={output}
+          onChange={(v) => {
+            setOutput(v);
+            setResult(null);
+          }}
+          options={[
+            { value: "single", label: "One PDF", hint: "All selected pages in one file" },
+            { value: "separate", label: "Separate PDFs", hint: "One file per page, in a ZIP" },
+          ]}
+        />
+      </div>
 
-      {isLoading && <p className="mt-4 text-sm text-zinc-500">Loading pages…</p>}
+      <div ref={resultRef}>
+        {result && (
+          <ResultPanel
+            title="Pages extracted"
+            files={[result.file]}
+            note={`${result.note} Your original file is unchanged.`}
+            onReset={onReset}
+            resetLabel="Extract from another PDF"
+          />
+        )}
+      </div>
+      <ErrorNote>{error}</ErrorNote>
 
-      {error && (
-        <p className="mt-4 text-sm text-red-600 bg-red-50 dark:bg-red-500/10 rounded-lg px-4 py-2">
-          {error}
-        </p>
-      )}
+      <PageGrid
+        source={source}
+        selected={sel.selected}
+        variant="select"
+        onToggle={(i, shift) => {
+          sel.toggle(i, shift);
+          setResult(null);
+        }}
+      />
 
-      {file && pages.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm text-zinc-500">
-              Click pages to select them · {selected.size} selected
-            </span>
-            <button
-              type="button"
-              onClick={() => {
-                setFile(null);
-                setPages([]);
-              }}
-              className="text-sm text-zinc-500 hover:text-red-600"
-            >
-              Change file
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {pages.map((page) => {
-              const isSelected = selected.has(page.index);
-              return (
-                <button
-                  type="button"
-                  key={page.index}
-                  onClick={() => toggle(page.index)}
-                  className={`relative rounded-lg border-2 overflow-hidden text-left transition-all ${
-                    isSelected
-                      ? "border-red-500 ring-2 ring-red-200 dark:ring-red-500/30"
-                      : "border-black/10 dark:border-white/10 hover:border-red-400"
-                  }`}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={page.thumbnail} alt={`Page ${page.index + 1}`} className="w-full block" />
-                  <span className="absolute bottom-1 right-1 bg-black/70 text-white text-xs rounded px-1.5 py-0.5">
-                    {page.index + 1}
-                  </span>
-                  {isSelected && (
-                    <span className="absolute top-1 left-1 bg-red-600 text-white rounded-full h-5 w-5 flex items-center justify-center">
-                      <Check className="h-3 w-3" aria-hidden="true" />
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          <button
-            type="button"
-            onClick={handleExtract}
-            disabled={isSaving || selected.size === 0}
-            className="mt-6 rounded-full bg-red-600 text-white px-6 py-2.5 font-semibold hover:bg-red-700 disabled:opacity-40 transition-colors"
-          >
-            {isSaving ? "Extracting…" : `Extract ${selected.size || ""} page${selected.size === 1 ? "" : "s"}`}
-          </button>
+      <StickyBar>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+          <ActionButton onClick={handleExtract} busy={busy} disabled={count === 0 || !!sel.textError}>
+            {count === 0 ? "Extract pages" : `Extract ${count} ${count === 1 ? "page" : "pages"}`}
+          </ActionButton>
+          <span className="text-sm text-zinc-600 dark:text-zinc-400 text-center sm:text-left">
+            {count === 0
+              ? `Tap the pages you want to keep (${n} pages).`
+              : output === "separate" && count > 1
+                ? `${count} PDFs in a ZIP`
+                : `One PDF with ${count} ${count === 1 ? "page" : "pages"}`}
+          </span>
         </div>
-      )}
+        {busy && <Progress value={progress} label="Saving" />}
+      </StickyBar>
     </div>
   );
 }
