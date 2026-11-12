@@ -124,7 +124,8 @@ const cache = new Map<string, ToolContent>();
 /** Load a tool's page content. `slug` is always the English registry slug. */
 export function getToolContent(slug: string, locale: ContentLocale = "en"): ToolContent {
   const key = `${locale}:${slug}`;
-  const hit = cache.get(key);
+  // Cache only in production builds so Markdown edits show up in `next dev`.
+  const hit = process.env.NODE_ENV === "production" ? cache.get(key) : undefined;
   if (hit) return hit;
   const tool = registry.find((t) => t.slug === slug);
   const fileSlug = locale === "es" ? tool?.es?.slug : slug;
