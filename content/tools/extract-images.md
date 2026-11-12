@@ -14,6 +14,8 @@ faq:
     a: "Images under the size filter are skipped (50×50 pixels by default). Logos and charts drawn as vector graphics aren't images, so there's nothing to extract; use PDF to PNG for those. Images placed inline in the page's drawing code are also not extracted."
   - q: "Why did a scanned PDF give one image per page?"
     a: "Because a scan is one photograph of each page, so you get those page images at the scanner's resolution."
+  - q: "How is this different from PDF to JPG?"
+    a: "PDF to JPG pictures each whole page, text and all; this pulls out only the embedded photos at their own size."
   - q: "Does it work on password-protected PDFs?"
     a: "Files with only a permissions password work. Files that need a password to open must be unlocked first."
   - q: "Why does an extracted JPG look odd in some apps?"
