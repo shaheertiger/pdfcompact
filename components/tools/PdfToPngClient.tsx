@@ -1,6 +1,7 @@
 "use client";
 
-// Placeholder until the tool is built.
+import PdfToImageTool from "./PdfToImageTool";
+
 export default function PdfToPngClient() {
-  return <p className="text-sm text-zinc-500">This tool is being built.</p>;
+  return <PdfToImageTool format="png" />;
 }
