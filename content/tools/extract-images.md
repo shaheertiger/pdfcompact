@@ -10,8 +10,6 @@ related: [pdf-to-jpg, pdf-to-png, compress-image, compress-pdf]
 faq:
   - q: "Are the extracted images the original quality?"
     a: "Yes, as stored in the PDF. JPEG images are copied out byte for byte, with no re-compression. Other images are decoded and saved as lossless PNG, so no detail is lost. If the PDF's author shrank the photos when making it, the PDF only holds the smaller version."
-  - q: "What's the difference from PDF to JPG?"
-    a: "PDF to JPG takes a picture of each whole page, text and all. Extract Images pulls out only the photos and pictures embedded in the pages, at their own size."
   - q: "Why are some images missing?"
     a: "Images under the size filter are skipped (50×50 pixels by default). Logos and charts drawn as vector graphics aren't images, so there's nothing to extract; use PDF to PNG for those. Images placed inline in the page's drawing code are also not extracted."
   - q: "Why did a scanned PDF give one image per page?"
@@ -74,7 +72,7 @@ Pull product or event photos out of a PDF brochure for a website or post, withou
 
 ### Recovering photos you only have as a PDF
 
-When the original photos were deleted but the PDF report, album or portfolio still exists, extraction gets back the pictures at the best quality the PDF stored.
+Lost the original photos but still have the PDF album or portfolio? Extraction recovers them at the best quality the PDF stored.
 
 ## Troubleshooting
 
@@ -85,4 +83,3 @@ When the original photos were deleted but the PDF report, album or portfolio sti
 | JPG colours look strange | Open it in a browser, or re-save it with Compress Image. | The photo is stored in CMYK for printing. |
 | Transparent image has a black or white box | Use PDF to PNG for that page. | Its transparency mask can't travel with an original JPEG. |
 | "Needs a password to open" | Remove the password first, then try again. | Encrypted content can't be read without it. |
-| Some images "couldn't be decoded" | Use PDF to PNG for those pages. | Rare formats or damaged image data. |
