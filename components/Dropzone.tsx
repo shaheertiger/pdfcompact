@@ -3,6 +3,7 @@
 import { useCallback, useId, useState } from "react";
 import type { DragEvent } from "react";
 import { UploadCloud } from "lucide-react";
+import { kitStrings, useStrings } from "@/lib/i18n";
 
 type DropzoneProps = {
   accept?: string;
@@ -16,9 +17,10 @@ export default function Dropzone({
   accept = "application/pdf",
   multiple = false,
   onFiles,
-  label = "Drop your PDF here",
-  hint = "or click to browse",
+  label,
+  hint,
 }: DropzoneProps) {
+  const t = useStrings(kitStrings);
   const [isDragging, setIsDragging] = useState(false);
   const inputId = useId();
 
@@ -48,22 +50,25 @@ export default function Dropzone({
       }}
       onDragLeave={() => setIsDragging(false)}
       onDrop={onDrop}
-      className={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-10 text-center cursor-pointer transition-colors ${
+      className={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-6 py-8 sm:p-10 text-center cursor-pointer transition-colors ${
         isDragging
           ? "border-red-500 bg-red-50 dark:bg-red-500/10"
           : "border-black/20 dark:border-white/20 hover:border-red-400"
       }`}
     >
       <UploadCloud className="h-9 w-9 text-zinc-400" aria-hidden="true" />
-      <span className="font-medium">{label}</span>
-      <span className="text-sm text-zinc-500">{hint}</span>
+      <span className="font-medium">{label ?? (multiple ? t.dropPdfs : t.dropPdf)}</span>
+      <span className="text-sm text-zinc-500">{hint ?? (multiple ? t.browseMany : t.browse)}</span>
       <input
         id={inputId}
         type="file"
         accept={accept}
         multiple={multiple}
         className="hidden"
-        onChange={(e) => handleFiles(e.target.files)}
+        onChange={(e) => {
+          handleFiles(e.target.files);
+          e.target.value = "";
+        }}
       />
     </label>
   );

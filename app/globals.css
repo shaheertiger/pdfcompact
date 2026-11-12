@@ -2,7 +2,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #18181b;
 }
 
 @theme inline {
@@ -14,11 +14,94 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #09090b;
+    --foreground: #f4f4f5;
   }
 }
 
 body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+html {
+  scroll-padding-top: 5rem;
+}
+
+/* Tables (limits table and Markdown tables) */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid rgb(0 0 0 / 0.1);
+  border-radius: 0.75rem;
+  margin: 1rem 0;
+}
+.table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.table-wrap th,
+.table-wrap td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.6rem 0.9rem;
+  border-top: 1px solid rgb(0 0 0 / 0.08);
+}
+.table-wrap thead th {
+  border-top: 0;
+  background: rgb(244 244 245);
+  font-weight: 600;
+}
+.table-wrap tbody tr:first-child th,
+.table-wrap tbody tr:first-child td {
+  border-top: 0;
+}
+.table-wrap thead + tbody tr:first-child th,
+.table-wrap thead + tbody tr:first-child td {
+  border-top: 1px solid rgb(0 0 0 / 0.08);
+}
+table.limits th {
+  width: 34%;
+  font-weight: 600;
+  background: rgb(250 250 250);
+}
+@media (prefers-color-scheme: dark) {
+  .table-wrap { border-color: rgb(255 255 255 / 0.1); }
+  .table-wrap th, .table-wrap td { border-color: rgb(255 255 255 / 0.08); }
+  .table-wrap thead th { background: rgb(39 39 42); }
+  table.limits th { background: rgb(24 24 27); }
+}
+
+/* Long-form article under each tool */
+.article {
+  color: rgb(63 63 70);
+  line-height: 1.7;
+}
+.article > * + * { margin-top: 1rem; }
+.article h2 {
+  color: rgb(24 24 27);
+  font-size: 1.375rem;
+  line-height: 1.3;
+  font-weight: 650;
+  margin-top: 2.5rem;
+}
+.article h3 {
+  color: rgb(24 24 27);
+  font-size: 1.075rem;
+  font-weight: 600;
+  margin-top: 1.75rem;
+}
+.article h2 + *, .article h3 + * { margin-top: 0.5rem; }
+.article ul { list-style: disc; padding-left: 1.25rem; }
+.article ol { list-style: decimal; padding-left: 1.25rem; }
+.article li + li { margin-top: 0.35rem; }
+.article a { color: rgb(220 38 38); text-decoration: underline; text-underline-offset: 2px; }
+.article strong { color: rgb(24 24 27); font-weight: 600; }
+.article code { font-family: var(--font-geist-mono), monospace; font-size: 0.85em; background: rgb(244 244 245); padding: 0.1rem 0.3rem; border-radius: 0.25rem; }
+.article blockquote { border-left: 3px solid rgb(220 38 38); padding-left: 1rem; color: rgb(82 82 91); }
+@media (prefers-color-scheme: dark) {
+  .article { color: rgb(212 212 216); }
+  .article h2, .article h3, .article strong { color: rgb(250 250 250); }
+  .article a { color: rgb(248 113 113); }
+  .article code { background: rgb(39 39 42); }
+  .article blockquote { color: rgb(161 161 170); }
 }

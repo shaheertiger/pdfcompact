@@ -1,38 +1,18 @@
 import {
-  Combine,
-  Scissors,
-  ArrowDownUp,
-  Trash2,
-  FileOutput,
-  FileText,
-  FileType,
-  Image as ImageIcon,
-  FileImage,
-  PenLine,
-  FileSignature,
-  type LucideIcon,
+  Combine, Scissors, LayoutGrid, Trash2, FileOutput, RotateCw, Ruler, SquareSplitHorizontal,
+  Shuffle, Crop, Minimize2, Layers, Diff, FileArchive, FileType, FileText, FileImage, Image as ImageIcon,
+  FileSpreadsheet, BookOpen, Images, Sheet, Smartphone, BookText, PenLine, FileSignature, Hash,
+  Stamp, Lock, ScanText, Camera, ImagePlus, ImageDown, Scaling, TextCursorInput, type LucideIcon,
 } from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
-  Combine,
-  Scissors,
-  ArrowDownUp,
-  Trash2,
-  FileOutput,
-  FileText,
-  FileType,
-  Image: ImageIcon,
-  FileImage,
-  PenLine,
-  FileSignature,
+  Combine, Scissors, LayoutGrid, Trash2, FileOutput, RotateCw, Ruler, SquareSplitHorizontal,
+  Shuffle, Crop, Minimize2, Layers, Diff, FileArchive, FileType, FileText, FileImage, Image: ImageIcon,
+  FileSpreadsheet, BookOpen, Images, Sheet, Smartphone, BookText, PenLine, FileSignature, Hash,
+  Stamp, Lock, ScanText, Camera, ImagePlus, ImageDown, Scaling, TextCursorInput,
 };
 
-type ToolIconProps = {
-  name: string;
-  className?: string;
-};
-
-export default function ToolIcon({ name, className }: ToolIconProps) {
+export default function ToolIcon({ name, className }: { name: string; className?: string }) {
   const Icon = iconMap[name] ?? FileText;
   return <Icon className={className} aria-hidden="true" />;
 }

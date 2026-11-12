@@ -1,30 +1,39 @@
 import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/site";
-import { tools } from "@/lib/tools";
+import { registry } from "@/lib/registry";
+import { getToolContent } from "@/lib/content";
+
+// lastmod is honest: tool pages use the `updated` date from their content
+// file, which only changes when the facts on the page change.
+const STATIC_UPDATED = "2026-11-12";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  const staticPages = ["", "/how-it-works", "/about", "/contact", "/privacy", "/terms"];
+  const entries: MetadataRoute.Sitemap = staticPages.map((path) => ({
+    url: `${siteUrl}${path}`,
+    lastModified: STATIC_UPDATED,
+  }));
+  entries[0].alternates = { languages: { en: siteUrl, es: `${siteUrl}/es` } };
+  entries.push({
+    url: `${siteUrl}/es`,
+    lastModified: STATIC_UPDATED,
+    alternates: { languages: { en: siteUrl, es: `${siteUrl}/es` } },
+  });
 
-  const staticPages: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
-    { path: "", priority: 1, changeFrequency: "weekly" },
-    { path: "/about", priority: 0.3, changeFrequency: "monthly" },
-    { path: "/contact", priority: 0.3, changeFrequency: "monthly" },
-    { path: "/privacy", priority: 0.1, changeFrequency: "yearly" },
-    { path: "/terms", priority: 0.1, changeFrequency: "yearly" },
-  ];
-
-  return [
-    ...staticPages.map(({ path, priority, changeFrequency }) => ({
-      url: `${siteUrl}${path}`,
-      lastModified: now,
-      changeFrequency,
-      priority,
-    })),
-    ...tools.map((tool) => ({
-      url: `${siteUrl}/tools/${tool.slug}`,
-      lastModified: now,
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    })),
-  ];
+  for (const t of registry) {
+    const languages = t.es ? { en: `${siteUrl}/${t.slug}`, es: `${siteUrl}/es/${t.es.slug}` } : undefined;
+    entries.push({
+      url: `${siteUrl}/${t.slug}`,
+      lastModified: getToolContent(t.slug).updated,
+      ...(languages && { alternates: { languages } }),
+    });
+    if (t.es && languages) {
+      entries.push({
+        url: languages.es,
+        lastModified: getToolContent(t.slug, "es").updated,
+        alternates: { languages },
+      });
+    }
+  }
+  return entries;
 }

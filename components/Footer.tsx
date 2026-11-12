@@ -1,74 +1,49 @@
 import Link from "next/link";
-import { tools } from "@/lib/tools";
+import { registry, groups } from "@/lib/registry";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-black/10 dark:border-white/10 mt-16">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 grid gap-8 sm:grid-cols-3">
-        <div>
+    <footer className="border-t border-black/10 dark:border-white/10 mt-16 bg-zinc-50 dark:bg-zinc-950">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-12 grid gap-8 grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
+        <div className="col-span-2 md:col-span-4 lg:col-span-1">
           <div className="font-bold text-lg mb-2">
             PDF<span className="text-red-600">Compact</span>
           </div>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-xs">
-            Free, fast PDF tools that run entirely in your browser. Your files
-            are never uploaded to a server.
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            Free PDF tools that run in your browser. Your files never leave your device.
           </p>
         </div>
-        <div>
-          <h3 className="font-semibold mb-2 text-sm uppercase tracking-wide text-zinc-500">
-            Tools
-          </h3>
-          <ul className="grid grid-cols-2 gap-1 text-sm">
-            {tools.map((tool) => (
-              <li key={tool.slug}>
-                <Link
-                  href={`/tools/${tool.slug}`}
-                  className="text-zinc-600 dark:text-zinc-400 hover:text-red-600"
-                >
-                  {tool.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h3 className="font-semibold mb-2 text-sm uppercase tracking-wide text-zinc-500">
-            Company
-          </h3>
-          <ul className="grid gap-1 text-sm">
-            <li>
-              <Link href="/about" className="text-zinc-600 dark:text-zinc-400 hover:text-red-600">
-                About
-              </Link>
-            </li>
-            <li>
-              <Link href="/contact" className="text-zinc-600 dark:text-zinc-400 hover:text-red-600">
-                Contact
-              </Link>
-            </li>
-            <li>
-              <Link href="/privacy" className="text-zinc-600 dark:text-zinc-400 hover:text-red-600">
-                Privacy Policy
-              </Link>
-            </li>
-            <li>
-              <Link href="/terms" className="text-zinc-600 dark:text-zinc-400 hover:text-red-600">
-                Terms of Service
-              </Link>
-            </li>
-          </ul>
-        </div>
+        {groups.map((g) => (
+          <div key={g.id}>
+            <h2 className="font-semibold mb-2 text-xs uppercase tracking-wide text-zinc-500">
+              <Link href={`/#${g.id}`} className="hover:text-red-600">{g.name}</Link>
+            </h2>
+            <ul className="grid gap-1.5 text-sm">
+              {registry
+                .filter((t) => t.group === g.id)
+                .map((t) => (
+                  <li key={t.slug}>
+                    <Link href={`/${t.slug}`} className="text-zinc-600 dark:text-zinc-400 hover:text-red-600">
+                      {t.name}
+                    </Link>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        ))}
       </div>
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 border-t border-black/10 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-zinc-500">
-        <p>&copy; {new Date().getFullYear()} PDFCompact. All rights reserved.</p>
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 border-t border-black/10 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-500">
+        <p>&copy; {new Date().getFullYear()} PDFCompact</p>
+        <nav aria-label="Company" className="flex flex-wrap justify-center gap-4">
+          <Link href="/how-it-works" className="hover:text-red-600">How it works</Link>
+          <Link href="/about" className="hover:text-red-600">About</Link>
+          <Link href="/contact" className="hover:text-red-600">Contact</Link>
+          <Link href="/privacy" className="hover:text-red-600">Privacy</Link>
+          <Link href="/terms" className="hover:text-red-600">Terms</Link>
+        </nav>
         <p>
           A project of{" "}
-          <a
-            href="https://pdfcanada.ca/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-zinc-600 dark:text-zinc-300 hover:text-red-600"
-          >
+          <a href="https://pdfcanada.ca/" target="_blank" rel="noopener" className="font-medium text-zinc-600 dark:text-zinc-300 hover:text-red-600">
             PDF Canada
           </a>
         </p>

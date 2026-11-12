@@ -41,5 +41,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# generated at install/build time by scripts/copy-pdf-worker.mjs
+# generated at install/build time by scripts/copy-vendor-assets.mjs
+/public/vendor/
 /public/pdf.worker.min.mjs
