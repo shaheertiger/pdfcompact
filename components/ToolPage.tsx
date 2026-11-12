@@ -43,7 +43,8 @@ const labels = {
     allTools: (g: string) => `All ${g.toLowerCase()} tools →`,
   },
   es: {
-    home: "Inicio",
+    // The root crumb points at the English homepage, so use the brand name, not "Inicio".
+    home: "PDFCompact",
     breadcrumb: "Ruta de navegación",
     spanishHub: "Herramientas PDF en español",
     pill: "Funciona en tu navegador: tu archivo nunca se sube",

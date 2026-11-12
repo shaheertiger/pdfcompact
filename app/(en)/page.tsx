@@ -29,6 +29,8 @@ const jobs: { job: string; slug: string }[] = [
   { job: "Stop others opening a PDF", slug: "protect-pdf" },
   { job: "Fit a portal's 2 MB or 5 MB limit by splitting", slug: "split-pdf-by-size" },
   { job: "Fix pages that are sideways or upside down", slug: "rotate-pdf" },
+  { job: "Get a photo under 50 KB for a form", slug: "compress-image" },
+  { job: "Fix a typo in an image with no source file", slug: "edit-text-in-image" },
 ];
 
 const faq = [
@@ -109,7 +111,7 @@ export default function Home() {
             Free PDF Tools — Compress, Merge, Convert and OCR in Your Browser
           </h1>
           <p className="mt-4 text-base sm:text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
-            {registry.length} tools for every PDF job. Nothing is uploaded: your files are processed on
+            {registry.length} tools for every PDF job, plus image tools. Nothing is uploaded: your files are processed on
             your own device. No sign-up, no watermark.
           </p>
           <ul className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-zinc-700 dark:text-zinc-300">

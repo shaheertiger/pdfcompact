@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { siteName } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -9,9 +10,9 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-14 prose prose-zinc dark:prose-invert">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-14 ">
       <h1 className="text-3xl font-bold mb-2">Terms of Service</h1>
-      <p className="text-sm text-zinc-500 mb-8">Last updated: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</p>
+      <p className="text-sm text-zinc-500 mb-8">Last updated: November 12, 2026</p>
 
       <h2 className="text-xl font-semibold mt-8 mb-2">Using {siteName}</h2>
       <p className="text-zinc-700 dark:text-zinc-300">
@@ -49,9 +50,9 @@ export default function TermsPage() {
       <h2 className="text-xl font-semibold mt-8 mb-2">Contact us</h2>
       <p className="text-zinc-700 dark:text-zinc-300">
         Questions about these terms? Visit our{" "}
-        <a href="/contact" className="text-red-600 hover:underline">
+        <Link href="/contact" className="text-red-600 hover:underline">
           Contact page
-        </a>
+        </Link>
         .
       </p>
     </div>

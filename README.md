@@ -1,43 +1,29 @@
 # PDFCompact
 
-Free, fast PDF tools that run entirely in the browser — no uploads, no accounts.
-A project of [PDF Canada](https://pdfcanada.ca/).
+Free PDF and image tools that run entirely in the browser — nothing is uploaded, no account, no watermark.
+A project of [PDF Canada](https://pdfcanada.ca/). Live at [pdfcompact.com](https://pdfcompact.com).
 
-## Tools
+## How the site is put together
 
-- Merge PDF (`/tools/merge-pdf`, legacy `/merge` redirects here)
-- Split PDF (`/tools/split`)
-- Rearrange Pages (`/tools/rearrange`)
-- Remove Pages (`/tools/remove-pages`)
-- Extract Pages (`/tools/extract`)
-- PDF to Text (`/tools/pdf-to-text`)
-- PDF to Word (`/tools/pdf-to-word`)
-- Image to PDF (`/tools/image-to-pdf`)
-- PDF to JPG (`/tools/pdf-to-jpg`)
-- Edit PDF (`/tools/edit-pdf`)
-- Sign PDF (`/tools/sign`)
+| Piece | Where | What it does |
+| --- | --- | --- |
+| Tool registry | `lib/registry.ts` | The one list of tools: slug, name, group, icon, size, legacy URLs, Spanish slug. |
+| Tool clients | `components/tools/*Client.tsx` | The interactive tool, one file per tool, lazy-loaded via `components/tools/index.tsx`. |
+| Page content | `content/tools/<slug>.md`, `content/es/<slug>.md` | Title, meta, H1, answer, limits, how-to, FAQ in frontmatter; the article in Markdown. |
+| Template | `components/ToolPage.tsx` | Renders every tool page (English and Spanish) with one JSON-LD graph: WebApplication, HowTo, FAQPage, BreadcrumbList, Organization. |
+| Routes | `app/(en)/[slug]`, `app/(es)/es/[slug]` | Flat URLs (`/compress-pdf`, `/es/comprimir-pdf`), statically generated, `dynamicParams = false`. |
+| Linter | `scripts/check-content.mjs` | Runs before every build and fails it on a missing answer, short FAQ, title without a promise, banned claim or broken internal link. |
+| Vendor assets | `scripts/copy-vendor-assets.mjs` → `public/vendor/` | Self-hosts the pdf.js worker, the Tesseract OCR worker/WASM and 6 OCR languages (no third-party CDN). |
 
-All file processing happens client-side with [`pdf-lib`](https://github.com/Hopding/pdf-lib) and
-[`pdfjs-dist`](https://github.com/mozilla/pdf.js) — files are never uploaded to a server.
+Navigation, the homepage hub, the sitemap (with hreflang), `llms.txt` and the 308 redirects from old URLs are all
+generated from the registry. See **[CONTENT.md](CONTENT.md)** for the page template and writing rules.
 
-## Adding a new tool (pSEO pattern)
+## Adding a tool
 
-Every tool's copy — name, one-line description, "about" paragraphs, how-to steps, and FAQ — lives
-in one place: `lib/tools.ts`. `ToolPageShell` (`components/ToolPageShell.tsx`) reads that data and
-renders the whole page: a compact, mobile-first-fold hero (icon + title + one-line description +
-the tool itself, all visible without scrolling), body copy, trust badges, how-to steps, an FAQ
-with `FAQPage` JSON-LD for rich results, and a `RelatedTools` grid that cross-links tools sharing a
-`category` automatically. The homepage grid, header dropdown, footer links, and `sitemap.ts` all
-render straight from the same `tools` array too.
-
-That means adding a new tool page is just:
-
-1. Add an entry to `tools` in `lib/tools.ts` (slug, name, description, icon, category, keywords,
-   about, howTo, faq).
-2. Build the tool's interactive `"use client"` component under `app/tools/<slug>/`.
-3. Add a 12-line `page.tsx` that renders `<ToolPageShell tool={tool}><YourClient /></ToolPageShell>`.
-
-No other file needs to change — navigation, sitemap, and cross-links all pick it up automatically.
+1. Check the gate: it works on 10 real files, it has search demand, and it's a different job from every existing page.
+2. Add an entry to `lib/registry.ts`.
+3. Build `components/tools/<Name>Client.tsx` and add it to `components/tools/index.tsx`.
+4. Write `content/tools/<slug>.md` and run `npm run check:content`.
 
 ## Getting started
 
@@ -46,68 +32,31 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
-
-`npm install` (via `postinstall`) and every `dev`/`build` run copy the pdf.js worker file into
-`public/pdf.worker.min.mjs` automatically — no manual step needed.
-
-## Environment variables
-
-Copy `.env.example` to `.env.local` and fill in what you have:
-
-| Variable | Description |
-| --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | Canonical site URL, used in metadata, sitemap.xml, and robots.txt. |
-| `NEXT_PUBLIC_ADSENSE_CLIENT` | Your Google AdSense publisher ID (e.g. `ca-pub-1234567890123456`). Leave blank until approved — ads simply won't render. |
-| `NEXT_PUBLIC_ADSENSE_SLOT_HOME` | Ad slot ID for the homepage placement. |
-| `NEXT_PUBLIC_ADSENSE_SLOT_TOOL` | Ad slot ID for the placement shown under every tool. |
+`npm install`, `dev` and `build` copy the worker/WASM/OCR files into `public/vendor/` automatically.
+If you bump `pdfjs-dist`, `tesseract.js` or `tesseract.js-core`, update the versions in `lib/vendor.ts`
+(the copy script fails loudly if they drift, because the versioned paths are served with an immutable cache header).
 
 ## Deploying to Vercel
 
-1. Push this repository to GitHub (already done if you're reading this on the repo).
-2. In [Vercel](https://vercel.com/new), import the `shaheertiger/pdfcompact` repository.
-3. Framework preset: **Next.js** (auto-detected). No build command changes are needed —
-   `npm run build` already runs the worker-copy step via `prebuild`.
-4. Add the environment variables above in the Vercel project settings (Production and Preview).
-5. Set your production domain (e.g. `pdfcompact.com`) under Project Settings → Domains, and set
-   `NEXT_PUBLIC_SITE_URL` to match.
-6. Deploy. Every push to the connected branch creates a preview deployment; merges to the
-   production branch deploy to your live domain.
+1. Import the repo in Vercel (framework preset: Next.js, production branch `main`).
+2. Domains: add `pdfcompact.com` and `www.pdfcompact.com`, and set the apex as primary so www redirects to it
+   (next.config.ts also 308s `www` → apex). Every canonical tag uses the apex.
+3. Environment: `NEXT_PUBLIC_SITE_URL=https://pdfcompact.com`. No secrets are needed; nothing runs server-side.
+4. After the first production deploy: verify the site in Google Search Console and Bing Webmaster Tools and submit
+   `/sitemap.xml`. Production builds ping IndexNow automatically (`scripts/indexnow.mjs`; key file in `public/`).
+5. Turn on Vercel Web Analytics in the project dashboard (the `<Analytics />` component is already in the layouts).
 
-## Enabling Google AdSense
+## Ads
 
-1. Apply for [Google AdSense](https://adsense.google.com/) with your live domain. Google reviews
-   sites with real, working content and a Privacy Policy — both are already in place
-   (`/privacy`, `/terms`, `/about`, `/contact`).
-2. Once approved, set `NEXT_PUBLIC_ADSENSE_CLIENT` to your publisher ID and redeploy. The
-   AdSense script (`components/AdSenseScript.tsx`) and ad units (`components/AdSlot.tsx`) are
-   already wired up and will start rendering automatically — they render nothing while the env
-   var is unset, so the site is ad-free (and safe to submit for review) until then.
-3. Create ad units in AdSense and set `NEXT_PUBLIC_ADSENSE_SLOT_HOME` /
-   `NEXT_PUBLIC_ADSENSE_SLOT_TOOL` to their slot IDs.
-4. Update `public/ads.txt` with the line AdSense gives you
-   (`google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0`).
+Off at launch, by design: ads above a tool slow it down and look untrustworthy. The playbook's rule is AdSense
+*below the tool only*, and only after ~30K visits a month. When that happens, set `NEXT_PUBLIC_ADSENSE_CLIENT` and
+`NEXT_PUBLIC_ADSENSE_SLOT_TOOL`, update `public/ads.txt` and the Privacy Policy; the CSP opens the AdSense hosts
+automatically when the client ID is set.
 
-## Tech stack
+## Security notes
 
-- [Next.js](https://nextjs.org) (App Router) + TypeScript + Tailwind CSS
-- [`pdf-lib`](https://github.com/Hopding/pdf-lib) for creating/editing PDFs
-- [`pdfjs-dist`](https://github.com/mozilla/pdf.js) for rendering page thumbnails and extracting text
-- [`docx`](https://github.com/dolanmiu/docx) for PDF → Word conversion
-- [`jszip`](https://github.com/Stuk/jszip) for multi-file split downloads
-
-### Why `pdfjs-dist` is pinned to an exact version
-
-`pdfjs-dist` is pinned to an exact version (no `^`) rather than a range, for two reasons:
-
-1. **Security**: versions `5.6.83`–`6.2.107` have a
-   [known high-severity vulnerability](https://github.com/advisories/GHSA-hq66-cqwq-w95j)
-   (arbitrary JS execution from a malicious PDF) — a real risk here since every tool renders
-   user-uploaded PDFs. `npm audit` will flag this if the pin is loosened back to a caret range.
-2. **Browser compatibility**: `6.x` versions use `Map.prototype.getOrInsertComputed`, a very
-   recent JS feature not yet supported in most browsers, which silently breaks every
-   thumbnail-based tool.
-
-When bumping this dependency, pin to an exact version below `5.6.83`, or `6.2.108`+ once its
-browser support has matured — and re-run `npm audit` plus a real browser test of the
-thumbnail-based tools (Rearrange, Remove Pages, Extract, Edit PDF, Sign) before committing.
+- `pdfjs-dist` is pinned to `5.4.624`: versions `5.6.83`–`6.2.107` have a
+  [high-severity advisory](https://github.com/advisories/GHSA-hq66-cqwq-w95j) (code execution from a malicious PDF),
+  and 6.x needs JS features most browsers don't ship yet. Re-run `npm audit` and test thumbnail tools before bumping.
+- A strict Content-Security-Policy (`next.config.ts`) blocks third-party scripts; workers and WASM load from the
+  same origin only.
