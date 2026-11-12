@@ -1,409 +1,417 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Caveat } from "next/font/google";
-import { PDFDocument } from "pdf-lib";
-import { Minus, Plus, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Caveat, Dancing_Script, Great_Vibes } from "next/font/google";
+import { CalendarDays, PenLine, Plus, Type, Undo2, Upload } from "lucide-react";
 import Dropzone from "@/components/Dropzone";
-import { downloadBlob, bytesToBlob, baseName } from "@/lib/download";
+import { ActionButton, ErrorNote, Field, FileBar, InfoNote, Progress, ResultPanel, SecondaryButton, inputClass } from "@/components/ui/kit";
+import { formatBytes } from "@/lib/download";
 import { nextId } from "@/lib/id";
-import { loadPdfjs, renderPageThumbnail } from "@/lib/pdfjs";
+import type { PlacedImage, PlacedText } from "@/lib/placements";
+import { canvasToSignature, imageFileToCanvas, removeLightBackground, renderTypedSignature, trimCanvas, type SignatureImage } from "@/lib/signature";
+import ColorPicker from "./stamp/ColorPicker";
+import { PageNav } from "./stamp/PageStage";
+import SignaturePad, { type SignaturePadHandle } from "./stamp/SignaturePad";
+import TargetPicker from "./stamp/TargetPicker";
+import { rasterizeUnsupportedText, useStandardFonts } from "./stamp/placed";
+import { PlacementStage, usePlacementEditor } from "./stamp/usePlacementEditor";
 
-const caveat = Caveat({ subsets: ["latin"], weight: "600" });
+const caveat = Caveat({ subsets: ["latin"], weight: "600", display: "swap" });
+const dancing = Dancing_Script({ subsets: ["latin"], weight: "600", display: "swap" });
+const vibes = Great_Vibes({ subsets: ["latin"], weight: "400", display: "swap" });
+const scripts = [
+  { id: "caveat", label: "Casual", family: caveat.style.fontFamily, className: caveat.className },
+  { id: "dancing", label: "Classic", family: dancing.style.fontFamily, className: dancing.className },
+  { id: "vibes", label: "Formal", family: vibes.style.fontFamily, className: vibes.className },
+];
 
-type Placement = {
-  id: string;
-  xPct: number;
-  yPct: number;
-  wPct: number;
-};
+const inkColors = [
+  { value: "#111827", label: "Black ink" },
+  { value: "#1e3a8a", label: "Blue ink" },
+];
 
-export default function SignClient() {
-  const [file, setFile] = useState<File | null>(null);
-  const [numPages, setNumPages] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageImage, setPageImage] = useState<string | null>(null);
-  const [placements, setPlacements] = useState<Record<number, Placement[]>>({});
-  const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
-  const [signatureAspect, setSignatureAspect] = useState(3);
-  const [signatureMode, setSignatureMode] = useState<"draw" | "type">("draw");
-  const [typedName, setTypedName] = useState("");
-  const [placing, setPlacing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+function formatDate(d: Date, f: string) {
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  const mon = d.toLocaleString("en-GB", { month: "short" });
+  if (f === "us") return `${mm}/${dd}/${yyyy}`;
+  if (f === "eu") return `${dd}/${mm}/${yyyy}`;
+  if (f === "iso") return `${yyyy}-${mm}-${dd}`;
+  return `${d.getDate()} ${mon} ${yyyy}`;
+}
 
-  const pdfRef = useRef<import("pdfjs-dist").PDFDocumentProxy | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const isDrawing = useRef(false);
+type Mode = "draw" | "type" | "upload";
 
-  const loadPage = async (pageNumber: number) => {
-    if (!pdfRef.current) return;
-    setPageImage(await renderPageThumbnail(pdfRef.current, pageNumber, 900));
-    setCurrentPage(pageNumber);
-  };
-
-  const onFiles = async (files: File[]) => {
-    const f = files[0];
-    setError(null);
-    setIsLoading(true);
-    try {
-      const bytes = await f.arrayBuffer();
-      const pdfjs = await loadPdfjs();
-      const pdf = await pdfjs.getDocument({ data: bytes }).promise;
-      pdfRef.current = pdf;
-      setFile(f);
-      setNumPages(pdf.numPages);
-      setPlacements({});
-      await loadPage(1);
-    } catch (e) {
-      console.error(e);
-      setError("Couldn't read this PDF. It may be corrupted or password protected.");
-    } finally {
-      setIsLoading(false);
+export default function SignPdfClient() {
+  const ed = usePlacementEditor();
+  const fonts = useStandardFonts();
+  const [marks, setMarks] = useState<Record<string, SignatureImage>>({});
+  const [mode, setMode] = useState<Mode>("draw");
+  const [creating, setCreating] = useState(true);
+  const [ink, setInk] = useState("#111827");
+  const [thickness, setThickness] = useState(2.6);
+  const [padEmpty, setPadEmpty] = useState(true);
+  const [typed, setTyped] = useState("");
+  const [script, setScript] = useState(scripts[0].id);
+  const [upload, setUpload] = useState<HTMLCanvasElement | null>(null);
+  const [uploadPreview, setUploadPreview] = useState<string | null>(null);
+  const [removeBg, setRemoveBg] = useState(true);
+  const [sigError, setSigError] = useState<string | null>(null);
+  const [dateFmt, setDateFmt] = useState("long");
+  const padRef = useRef<SignaturePadHandle | null>(null);
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  // On phones the page sits below the signature panel: bring it into view after placing.
+  const showStage = () => {
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      setTimeout(() => stageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
     }
   };
 
-  const startDraw = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    isDrawing.current = true;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    const rect = canvas.getBoundingClientRect();
-    ctx.beginPath();
-    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-  };
+  const imageUrls = Object.fromEntries(Object.entries(marks).map(([k, v]) => [k, v.url]));
 
-  const draw = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!isDrawing.current) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    const rect = canvas.getBoundingClientRect();
-    ctx.lineWidth = 2.5;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#111827";
-    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-    ctx.stroke();
-  };
-
-  const endDraw = () => {
-    isDrawing.current = false;
-  };
-
-  const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-  };
-
-  const useDrawnSignature = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    setSignatureDataUrl(canvas.toDataURL("image/png"));
-    setSignatureAspect(canvas.width / canvas.height);
-  };
-
-  const useTypedSignature = () => {
-    if (!typedName.trim()) return;
-    const canvas = document.createElement("canvas");
-    canvas.width = 600;
-    canvas.height = 200;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#111827";
-    ctx.font = `90px ${caveat.style.fontFamily}, cursive`;
-    ctx.textBaseline = "middle";
-    ctx.fillText(typedName, 20, canvas.height / 2);
-    setSignatureDataUrl(canvas.toDataURL("image/png"));
-    setSignatureAspect(canvas.width / canvas.height);
-  };
-
-  const getRelativePos = (clientX: number, clientY: number) => {
-    const el = containerRef.current;
-    if (!el) return { x: 0, y: 0 };
-    const rect = el.getBoundingClientRect();
-    return {
-      x: Math.min(1, Math.max(0, (clientX - rect.left) / rect.width)),
-      y: Math.min(1, Math.max(0, (clientY - rect.top) / rect.height)),
+  const placeMark = (key: string, sig: { width: number; height: number }) => {
+    const r = ed.render;
+    if (!r) return;
+    const aspect = sig.width / sig.height;
+    let fw = Math.min(0.3, (0.09 * r.ptHeight * aspect) / r.ptWidth);
+    fw = Math.max(fw, 0.08);
+    const item: PlacedImage = {
+      kind: "image",
+      id: nextId("sig"),
+      imgKey: key,
+      aspect,
+      fx: 0.5 - fw / 2,
+      fy: 0.62,
+      fw,
+      opacity: 1,
+      target: { mode: "one", page: ed.page - 1 },
     };
+    ed.add(item);
+    showStage();
   };
 
-  const onPageClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!placing || !signatureDataUrl) return;
-    const { x, y } = getRelativePos(e.clientX, e.clientY);
-    const wPct = 0.25;
-    setPlacements((prev) => ({
-      ...prev,
-      [currentPage]: [
-        ...(prev[currentPage] ?? []),
-        { id: nextId("s"), xPct: x - wPct / 2, yPct: y - wPct / signatureAspect / 2, wPct },
-      ],
-    }));
-    setPlacing(false);
+  const buildPreviewUpload = (src: HTMLCanvasElement, strip: boolean) => {
+    const c = document.createElement("canvas");
+    c.width = src.width;
+    c.height = src.height;
+    c.getContext("2d")?.drawImage(src, 0, 0);
+    if (strip) removeLightBackground(c);
+    return c;
   };
 
-  const dragPlacement = (id: string, e: React.PointerEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    const el = e.currentTarget;
-    el.setPointerCapture(e.pointerId);
-    const onMove = (ev: PointerEvent) => {
-      const { x, y } = getRelativePos(ev.clientX, ev.clientY);
-      setPlacements((prev) => ({
-        ...prev,
-        [currentPage]: (prev[currentPage] ?? []).map((p) =>
-          p.id === id ? { ...p, xPct: x - p.wPct / 2, yPct: y - p.wPct / signatureAspect / 2 } : p
-        ),
-      }));
-    };
-    const onUp = () => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-    };
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
+  const createSignature = async () => {
+    setSigError(null);
+    let canvas: HTMLCanvasElement | null = null;
+    if (mode === "draw") {
+      const raw = padRef.current?.toCanvas(3) ?? null;
+      canvas = raw ? trimCanvas(raw, 6) : null;
+      if (!canvas) return setSigError("Draw your signature in the box first.");
+    } else if (mode === "type") {
+      const fam = scripts.find((s) => s.id === script)?.family ?? "cursive";
+      if (!typed.trim()) return setSigError("Type your name first.");
+      canvas = await renderTypedSignature(typed.trim(), fam, ink, 120);
+      if (!canvas) return setSigError("Couldn't draw that text.");
+    } else {
+      if (!upload) return setSigError("Choose a photo or scan of your signature first.");
+      const c = buildPreviewUpload(upload, removeBg);
+      canvas = trimCanvas(c, 4) ?? c;
+    }
+    const sig = await canvasToSignature(canvas);
+    const key = nextId("mark");
+    setMarks((m) => ({ ...m, [key]: sig }));
+    placeMark(key, sig);
+    setCreating(false);
+    padRef.current?.clear();
   };
 
-  const resizePlacement = (id: string, delta: number) => {
-    setPlacements((prev) => ({
-      ...prev,
-      [currentPage]: (prev[currentPage] ?? []).map((p) =>
-        p.id === id ? { ...p, wPct: Math.min(0.8, Math.max(0.08, p.wPct + delta)) } : p
-      ),
-    }));
-  };
-
-  const removePlacement = (id: string) => {
-    setPlacements((prev) => ({
-      ...prev,
-      [currentPage]: (prev[currentPage] ?? []).filter((p) => p.id !== id),
-    }));
-  };
-
-  const handleSave = async () => {
-    if (!file || !signatureDataUrl) return;
-    setIsSaving(true);
-    setError(null);
+  const onUpload = async (files: File[]) => {
+    setSigError(null);
     try {
-      const bytes = await file.arrayBuffer();
-      const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
-      const pngBytes = await (await fetch(signatureDataUrl)).arrayBuffer();
-      const image = await doc.embedPng(pngBytes);
-
-      for (const [pageNumStr, pagePlacements] of Object.entries(placements)) {
-        const pageIndex = parseInt(pageNumStr, 10) - 1;
-        const page = doc.getPage(pageIndex);
-        const { width, height } = page.getSize();
-        for (const p of pagePlacements) {
-          const w = p.wPct * width;
-          const h = w / signatureAspect;
-          page.drawImage(image, {
-            x: p.xPct * width,
-            y: height - p.yPct * height - h,
-            width: w,
-            height: h,
-          });
-        }
-      }
-
-      const outBytes = await doc.save();
-      downloadBlob(bytesToBlob(outBytes, "application/pdf"), `${baseName(file.name)}-signed.pdf`);
+      const c = await imageFileToCanvas(files[0], 1600);
+      setUpload(c);
+      setUploadPreview(buildPreviewUpload(c, removeBg).toDataURL("image/png"));
     } catch (e) {
-      console.error(e);
-      setError("Something went wrong while saving your signed PDF.");
-    } finally {
-      setIsSaving(false);
+      setSigError(e instanceof Error ? e.message : String(e));
     }
   };
 
-  const currentPlacements = placements[currentPage] ?? [];
+  const addDate = () => {
+    const r = ed.render;
+    if (!r) return;
+    const item: PlacedText = {
+      kind: "text",
+      id: nextId("date"),
+      text: formatDate(new Date(), dateFmt),
+      fsize: 11 / r.ptWidth,
+      color: "#111827",
+      font: "helvetica",
+      fx: 0.55,
+      fy: 0.75,
+      fw: 0,
+      opacity: 1,
+      target: { mode: "one", page: ed.page - 1 },
+    };
+    ed.add(item);
+    showStage();
+  };
+
+  const reset = () => {
+    for (const v of Object.values(marks)) URL.revokeObjectURL(v.url);
+    setMarks({});
+    setCreating(true);
+    ed.reset();
+  };
+
+  if (!ed.file) {
+    return (
+      <div>
+        <Dropzone onFiles={ed.onFiles} label="Drop the PDF you need to sign" />
+        <ErrorNote>{ed.loadError}</ErrorNote>
+      </div>
+    );
+  }
+
+  const sel = ed.selected;
+  const count = ed.items.length;
+  const tab = (m: Mode, label: string, Icon: typeof PenLine) => (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={mode === m}
+      onClick={() => {
+        setMode(m);
+        setSigError(null);
+      }}
+      className={`flex-1 inline-flex h-10 items-center justify-center gap-1.5 rounded-full text-sm font-medium ${
+        mode === m ? "bg-white dark:bg-zinc-700 shadow text-red-700 dark:text-red-300" : "text-zinc-600 dark:text-zinc-300"
+      }`}
+    >
+      <Icon className="h-4 w-4" aria-hidden="true" />
+      {label}
+    </button>
+  );
 
   return (
     <div>
-      {!file && <Dropzone onFiles={onFiles} label="Drop a PDF here" hint="or click to browse" />}
+      <FileBar name={ed.file.name} detail={`${ed.numPages || "…"} pages · ${formatBytes(ed.file.size)}`} onReset={reset} />
+      <ErrorNote>{ed.pdfError}</ErrorNote>
 
-      {isLoading && <p className="mt-4 text-sm text-zinc-500">Loading PDF…</p>}
-
-      {error && (
-        <p className="mt-4 text-sm text-red-600 bg-red-50 dark:bg-red-500/10 rounded-lg px-4 py-2">
-          {error}
-        </p>
-      )}
-
-      {file && pageImage && (
-        <div>
-          {!signatureDataUrl && (
-            <div className="mb-6 rounded-xl border border-black/10 dark:border-white/10 p-4">
-              <div className="flex gap-2 mb-3">
-                <button
-                  type="button"
-                  onClick={() => setSignatureMode("draw")}
-                  className={`rounded-full px-4 py-1.5 text-sm font-medium border ${
-                    signatureMode === "draw"
-                      ? "border-red-500 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400"
-                      : "border-black/10 dark:border-white/10"
-                  }`}
-                >
-                  Draw
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSignatureMode("type")}
-                  className={`rounded-full px-4 py-1.5 text-sm font-medium border ${
-                    signatureMode === "type"
-                      ? "border-red-500 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400"
-                      : "border-black/10 dark:border-white/10"
-                  }`}
-                >
-                  Type
-                </button>
+      {ed.result ? (
+        <ResultPanel
+          title="Signed"
+          files={[ed.result]}
+          note={
+            <>
+              Added {count} item{count === 1 ? "" : "s"}. This is a visual signature (an image on the page), not a certificate-based
+              digital signature. Open the file and check each page before you send it.
+            </>
+          }
+          onReset={() => ed.setResult(null)}
+          resetLabel="Keep editing"
+        />
+      ) : (
+        <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] md:items-start">
+          <div ref={stageRef} className="order-2 md:order-1 scroll-mt-4">
+            {Object.keys(marks).length > 0 && (
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                {Object.entries(marks).map(([k, v]) => (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => placeMark(k, v)}
+                    aria-label={`Place this signature on page ${ed.page} again`}
+                    title="Place again on this page"
+                    className="h-10 rounded-lg border border-black/10 dark:border-white/15 bg-white px-1.5 hover:border-red-400 flex items-center gap-1"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={v.url} alt="" className="h-7 max-w-24 object-contain" />
+                    <Plus className="h-3.5 w-3.5 text-red-600" aria-hidden="true" />
+                  </button>
+                ))}
+                {ed.canUndo && (
+                  <button type="button" onClick={ed.undo} className="ml-auto inline-flex h-10 items-center gap-1 rounded-full px-3 text-sm text-zinc-600 dark:text-zinc-300 hover:text-red-600">
+                    <Undo2 className="h-4 w-4" aria-hidden="true" /> Undo
+                  </button>
+                )}
               </div>
-
-              {signatureMode === "draw" ? (
-                <div>
-                  <canvas
-                    ref={canvasRef}
-                    width={500}
-                    height={160}
-                    onPointerDown={startDraw}
-                    onPointerMove={draw}
-                    onPointerUp={endDraw}
-                    className="w-full max-w-md rounded-lg border border-dashed border-black/20 dark:border-white/20 bg-white touch-none"
-                    style={{ height: 160 }}
-                  />
-                  <div className="mt-2 flex gap-2">
-                    <button type="button" onClick={clearCanvas} className="text-sm text-zinc-500 hover:text-red-600">
-                      Clear
-                    </button>
-                    <button
-                      type="button"
-                      onClick={useDrawnSignature}
-                      className="rounded-full bg-red-600 text-white px-4 py-1.5 text-sm font-semibold hover:bg-red-700"
-                    >
-                      Use this signature
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <input
-                    type="text"
-                    value={typedName}
-                    onChange={(e) => setTypedName(e.target.value)}
-                    placeholder="Type your name"
-                    className={`${caveat.className} w-full max-w-md rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-4 py-3 text-3xl`}
-                  />
-                  <button
-                    type="button"
-                    onClick={useTypedSignature}
-                    disabled={!typedName.trim()}
-                    className="mt-2 rounded-full bg-red-600 text-white px-4 py-1.5 text-sm font-semibold hover:bg-red-700 disabled:opacity-40"
-                  >
-                    Use this signature
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
-          {signatureDataUrl && (
-            <div className="mb-4 flex flex-wrap items-center gap-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={signatureDataUrl} alt="Your signature" className="h-10 border border-black/10 dark:border-white/10 rounded bg-white" />
-              <button
-                type="button"
-                onClick={() => setPlacing(true)}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium border ${
-                  placing
-                    ? "border-red-500 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400"
-                    : "border-black/10 dark:border-white/10"
-                }`}
-              >
-                {placing ? "Click the page to place…" : "Place signature"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setSignatureDataUrl(null)}
-                className="text-sm text-zinc-500 hover:text-red-600"
-              >
-                Change signature
-              </button>
-
-              {numPages > 1 && (
-                <div className="ml-auto flex items-center gap-2 text-sm">
-                  <button type="button" disabled={currentPage <= 1} onClick={() => loadPage(currentPage - 1)} className="flex items-center disabled:opacity-30">
-                    <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-                    Prev
-                  </button>
-                  <span>
-                    Page {currentPage} / {numPages}
-                  </span>
-                  <button type="button" disabled={currentPage >= numPages} onClick={() => loadPage(currentPage + 1)} className="flex items-center disabled:opacity-30">
-                    Next
-                    <ChevronRight className="h-4 w-4" aria-hidden="true" />
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
-          <div
-            ref={containerRef}
-            onClick={onPageClick}
-            className="relative mx-auto select-none"
-            style={{ cursor: placing ? "crosshair" : "default", maxWidth: 900 }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={pageImage} alt={`Page ${currentPage}`} className="w-full block rounded-lg border border-black/10 dark:border-white/10" draggable={false} />
-
-            {currentPlacements.map((p) => (
-              <div
-                key={p.id}
-                onPointerDown={(e) => dragPlacement(p.id, e)}
-                className="absolute group cursor-move"
-                style={{ left: `${p.xPct * 100}%`, top: `${p.yPct * 100}%`, width: `${p.wPct * 100}%` }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={signatureDataUrl ?? ""} alt="Signature" className="w-full pointer-events-none" />
-                <div className="absolute -top-2 -right-2 hidden group-hover:flex gap-1">
-                  <button
-                    type="button"
-                    onClick={() => resizePlacement(p.id, -0.03)}
-                    className="h-5 w-5 flex items-center justify-center rounded-full bg-black/70 text-white"
-                  >
-                    <Minus className="h-3 w-3" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => resizePlacement(p.id, 0.03)}
-                    className="h-5 w-5 flex items-center justify-center rounded-full bg-black/70 text-white"
-                  >
-                    <Plus className="h-3 w-3" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => removePlacement(p.id)}
-                    className="h-5 w-5 flex items-center justify-center rounded-full bg-black/70 text-white"
-                  >
-                    <X className="h-3 w-3" aria-hidden="true" />
-                  </button>
-                </div>
-              </div>
-            ))}
+            )}
+            <PlacementStage ed={ed} imageUrls={imageUrls} fonts={fonts} labelFor={(p) => (p.kind === "image" ? "Signature" : p.kind === "text" ? `Date ${p.text}` : undefined)} />
+            <PageNav page={ed.page} count={ed.numPages} onChange={ed.setPage} />
           </div>
 
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={isSaving || !signatureDataUrl || Object.values(placements).every((p) => p.length === 0)}
-            className="mt-6 rounded-full bg-red-600 text-white px-6 py-2.5 font-semibold hover:bg-red-700 disabled:opacity-40 transition-colors"
-          >
-            {isSaving ? "Saving…" : "Save signed PDF"}
-          </button>
+          <div className="order-1 md:order-2 grid gap-5">
+            {creating ? (
+              <div className="rounded-xl border border-black/10 dark:border-white/15 p-3 sm:p-4 grid gap-3">
+                <div className="flex gap-1 rounded-full bg-zinc-100 dark:bg-zinc-800 p-1" role="tablist" aria-label="How to make your signature">
+                  {tab("draw", "Draw", PenLine)}
+                  {tab("type", "Type", Type)}
+                  {tab("upload", "Upload", Upload)}
+                </div>
+
+                {mode === "draw" && (
+                  <>
+                    <SignaturePad ref={padRef} color={ink} thickness={thickness} onChange={setPadEmpty} />
+                    <div className="flex flex-wrap items-center gap-2">
+                      <ColorPicker value={ink} onChange={setInk} swatches={inkColors} label="Ink" />
+                      <Field label="Pen">
+                        <select value={thickness} onChange={(e) => setThickness(parseFloat(e.target.value))} className={`${inputClass} h-10`}>
+                          <option value={1.8}>Fine</option>
+                          <option value={2.6}>Medium</option>
+                          <option value={3.8}>Bold</option>
+                        </select>
+                      </Field>
+                      <SecondaryButton onClick={() => padRef.current?.clear()} disabled={padEmpty}>
+                        Clear
+                      </SecondaryButton>
+                    </div>
+                  </>
+                )}
+
+                {mode === "type" && (
+                  <>
+                    <Field label="Your name">
+                      <input value={typed} maxLength={60} onChange={(e) => setTyped(e.target.value)} placeholder="Jane Doe" autoComplete="name" className={`${inputClass} h-11`} />
+                    </Field>
+                    <div className="grid gap-2" role="radiogroup" aria-label="Signature style">
+                      {scripts.map((s) => (
+                        <button
+                          key={s.id}
+                          type="button"
+                          role="radio"
+                          aria-checked={script === s.id}
+                          onClick={() => setScript(s.id)}
+                          className={`flex items-center justify-between rounded-lg border px-3 min-h-14 text-left ${
+                            script === s.id ? "border-red-500 bg-red-50/60 dark:bg-red-500/10" : "border-black/10 dark:border-white/15 hover:border-red-300"
+                          }`}
+                        >
+                          <span className={`${s.className} text-3xl truncate`} style={{ color: ink }}>
+                            {typed.trim() || "Jane Doe"}
+                          </span>
+                          <span className="text-xs text-zinc-500 ml-2 shrink-0">{s.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <ColorPicker value={ink} onChange={setInk} swatches={inkColors} label="Ink" />
+                  </>
+                )}
+
+                {mode === "upload" && (
+                  <>
+                    {uploadPreview ? (
+                      <div className="rounded-lg border border-black/10 dark:border-white/15 bg-[repeating-conic-gradient(#e4e4e7_0_25%,white_0_50%)] bg-[length:14px_14px] p-2">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={uploadPreview} alt="Your uploaded signature" className="max-h-36 mx-auto object-contain" />
+                      </div>
+                    ) : (
+                      <Dropzone onFiles={onUpload} accept="image/png,image/jpeg,image/webp" label="Photo or scan of your signature" hint="Sign white paper in dark ink, photograph it close up" />
+                    )}
+                    <label className="flex items-center gap-3 text-sm min-h-10 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={removeBg}
+                        onChange={(e) => {
+                          setRemoveBg(e.target.checked);
+                          if (upload) setUploadPreview(buildPreviewUpload(upload, e.target.checked).toDataURL("image/png"));
+                        }}
+                        className="h-5 w-5 accent-red-600"
+                      />
+                      Remove the white background
+                    </label>
+                    {uploadPreview && (
+                      <SecondaryButton
+                        onClick={() => {
+                          setUpload(null);
+                          setUploadPreview(null);
+                        }}
+                      >
+                        Choose another image
+                      </SecondaryButton>
+                    )}
+                  </>
+                )}
+
+                <ErrorNote>{sigError}</ErrorNote>
+                <ActionButton onClick={createSignature} disabled={!ed.render}>
+                  Place on page {ed.page}
+                </ActionButton>
+                {Object.keys(marks).length > 0 && (
+                  <button type="button" onClick={() => setCreating(false)} className="text-sm text-zinc-500 hover:text-red-600 h-10">
+                    Cancel
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                <SecondaryButton onClick={() => setCreating(true)}>
+                  <Plus className="h-4 w-4" aria-hidden="true" /> New signature or initials
+                </SecondaryButton>
+              </div>
+            )}
+
+            <div className="flex flex-wrap items-end gap-2">
+              <Field label="Date format">
+                <select value={dateFmt} onChange={(e) => setDateFmt(e.target.value)} className={`${inputClass} h-10`}>
+                  <option value="long">{formatDate(new Date(), "long")}</option>
+                  <option value="us">{formatDate(new Date(), "us")} (US)</option>
+                  <option value="eu">{formatDate(new Date(), "eu")} (UK, India, EU)</option>
+                  <option value="iso">{formatDate(new Date(), "iso")} (ISO)</option>
+                </select>
+              </Field>
+              <SecondaryButton onClick={addDate} disabled={!ed.render}>
+                <CalendarDays className="h-4 w-4" aria-hidden="true" /> Add date
+              </SecondaryButton>
+            </div>
+
+            {sel && (
+              <div className="rounded-xl border border-black/10 dark:border-white/15 p-4 grid gap-4">
+                <p className="text-sm font-medium">{sel.kind === "text" ? "Selected date" : "Selected signature"}</p>
+                {sel.kind === "text" && (
+                  <>
+                    <Field label="Text">
+                      <input
+                        value={sel.text}
+                        maxLength={80}
+                        onFocus={ed.snapshot}
+                        onChange={(e) => ed.update(sel.id, { text: e.target.value })}
+                        className={`${inputClass} h-11`}
+                      />
+                    </Field>
+                    <ColorPicker value={sel.color} onChange={(c) => ed.update(sel.id, { color: c })} swatches={inkColors} label="Color" />
+                  </>
+                )}
+                <TargetPicker
+                  key={sel.id}
+                  target={sel.target}
+                  current={ed.page - 1}
+                  count={ed.numPages}
+                  onChange={(t) => {
+                    ed.snapshot();
+                    ed.update(sel.id, { target: t });
+                  }}
+                />
+                <SecondaryButton onClick={() => ed.remove(sel.id)}>Remove</SecondaryButton>
+              </div>
+            )}
+
+            {count > 0 && !sel && (
+              <InfoNote>Drag to move. Drag the red corner dot to resize. Tap an item to put it on other pages (for initials on every page).</InfoNote>
+            )}
+
+            <ActionButton
+              onClick={() =>
+                ed.save(marks, "signed", (items) =>
+                  rasterizeUnsupportedText(items, fonts, ed.render ? ed.render.ptWidth / ed.render.ptHeight : 0.75)
+                )
+              }
+              busy={ed.busy}
+              disabled={!count || !ed.pdf}
+            >
+              Save signed PDF
+            </ActionButton>
+            {ed.busy && <Progress value={ed.progress} label="Saving…" />}
+            <ErrorNote>{ed.error}</ErrorNote>
+          </div>
         </div>
       )}
     </div>
