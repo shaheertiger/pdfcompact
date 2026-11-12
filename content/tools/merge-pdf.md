@@ -45,9 +45,9 @@ howto:
   question: "How do I merge PDF files into one?"
   steps:
     - name: "Add your PDFs"
-      text: "Drop two or more files on the box above, or tap it to pick them. You can add more files at any time."
+      text: "Drop two or more files on the box above, or tap it to pick them. Each file shows its page count, and you can add more at any time."
     - name: "Set the order — check this before merging"
-      text: "Drag files or use the arrows. The file at the top becomes the first pages. This is the step people most often get wrong."
+      text: "Drag the grip, use the arrows or press Sort by name. The file at the top becomes the first pages. This is the step people most often get wrong."
     - name: "Press Merge"
       text: "Every page is copied into a new PDF on your device. Nothing is re-compressed."
     - name: "Download the combined PDF"
@@ -62,7 +62,7 @@ On Windows and Mac you can also merge in some built-in apps (Preview on a Mac ca
 
 ## How do I merge PDFs on iPhone or Android?
 
-Open this page in Safari or Chrome, tap the box and choose your files from Files, Google Drive or Downloads. Drag to reorder (press and hold on a phone), tap Merge, then save the result. On older phones, keep the total under about 100 MB; very large merges can run out of memory in a mobile browser.
+Open this page in Safari or Chrome, tap the box and choose your files from Files, Google Drive or Downloads. Reorder by dragging the grip on the left of each file or by tapping the up and down arrows, tap Merge, then save the result. On older phones, keep the total under about 100 MB; very large merges can run out of memory in a mobile browser.
 
 ## Can I merge only some pages from each PDF?
 
@@ -103,8 +103,8 @@ If your scanner produced one file of front sides and another of back sides, merg
 
 | Problem | Fix | Why it happens |
 | --- | --- | --- |
-| "Couldn't merge these files" | Open the file in a PDF viewer to confirm it isn't damaged, or re-save it with Print to PDF. | One of the files is corrupted or isn't really a PDF. |
-| A file asks for a password | Remove the open password first, then merge. | Files locked with an open (user) password can't be read without it. |
+| A file is marked in red: "couldn't be read" | Open it in a PDF viewer to confirm it isn't damaged, or re-save it with Print to PDF, then add it again. | The file is corrupted or isn't really a PDF. |
+| A file is marked in red: "needs a password" | Remove the open password first, then merge. | Files locked with an open (user) password can't be read without it. |
 | Pages are in the wrong order | Reorder the files before merging, or fix single pages afterwards in Organize PDF. | The top file in the list becomes the first pages. |
 | Merged file is too big to email | Run it through Compress PDF, or split it with Split PDF by Size. | Merging adds file sizes together; it doesn't shrink anything. |
 | Form fields stopped working | Flatten each form first with Flatten PDF, then merge. | Fields from different files can clash when combined. |
