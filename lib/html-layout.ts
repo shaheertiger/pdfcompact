@@ -112,7 +112,15 @@ type Ctx = {
   bars: number[];
   pre: boolean;
   heading?: boolean;
+  /** Background fill drawn behind every line (code blocks from Markdown / notebook converters). */
+  shade?: RGB;
 };
+
+/** "#rrggbb" → RGB, for the data-pdf-* attributes our own converters emit. */
+function hexColor(v: string | null): RGB | undefined {
+  const m = v?.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+  return m ? rgb(parseInt(m[1], 16) / 255, parseInt(m[2], 16) / 255, parseInt(m[3], 16) / 255) : undefined;
+}
 
 function romanize(n: number): string {
   const map: [number, string][] = [[1000, "m"], [900, "cm"], [500, "d"], [400, "cd"], [100, "c"], [90, "xc"], [50, "l"], [40, "xl"], [10, "x"], [9, "ix"], [5, "v"], [4, "iv"], [1, "i"]];
@@ -303,8 +311,9 @@ class Engine {
         const lines = text.split("\n");
         lines.forEach((ln, i) => {
           if (i > 0) out.push("br");
-          // Keep runs of spaces in preformatted text as separate space tokens.
-          for (const piece of ln.split(/( )/)) if (piece) out.push({ text: piece, style: it.style, space: piece === " " });
+          // Spaces in preformatted text are kept as text, so indentation and column
+          // alignment survive; over-long lines wrap by character instead.
+          if (ln) out.push({ text: ln, style: it.style, space: false });
         });
         continue;
       }
@@ -372,8 +381,19 @@ class Engine {
       for (const w of word) {
         let rest = w.text;
         while (rest) {
+          // Longest prefix that fits (binary search: long code and log lines are common).
+          const avail = width - cur.width;
           let n = rest.length;
-          while (n > 1 && this.measure(rest.slice(0, n), w.style) > width - cur.width) n--;
+          if (this.measure(rest, w.style) > avail) {
+            let lo = 1;
+            let hi = rest.length - 1;
+            while (lo < hi) {
+              const mid = (lo + hi + 1) >> 1;
+              if (this.measure(rest.slice(0, mid), w.style) <= avail) lo = mid;
+              else hi = mid - 1;
+            }
+            n = lo;
+          }
           if (n === 1 && cur.tokens.length && this.measure(rest.slice(0, 1), w.style) > width - cur.width) {
             push();
             continue;
@@ -467,6 +487,9 @@ class Engine {
       if (this.ensure(line.height)) {
         /* new page */
       }
+      if (ctx.shade) {
+        this.page.drawRectangle({ x: x - 5, y: this.y - line.height, width: width + 5, height: line.height, color: ctx.shade });
+      }
       this.drawLine(line, x, width, ctx.align, ctx.bars);
       this.y -= line.height;
     }
@@ -488,6 +511,10 @@ class Engine {
       out.size = s.size * 0.92;
     }
     if (t === "small") out.size = s.size * 0.85;
+    // Syntax colours from our own Markdown / notebook converters. Source CSS colours are
+    // deliberately ignored (white-on-dark text from a web page would vanish on paper).
+    const pdfColor = hexColor(el.getAttribute("data-pdf-color"));
+    if (pdfColor) out.color = pdfColor;
     if (t === "sup" || t === "sub") {
       out.size = s.size * 0.7;
       out.shift = t === "sup" ? s.size * 0.35 : -s.size * 0.15;
@@ -572,7 +599,23 @@ class Engine {
       }
       case "pre": {
         this.spaceBefore(this.base * 0.4);
-        await this.flow(el, { ...ctx, pre: true, style: this.styleFor(el, ctx.style) });
+        const shade = hexColor(el.getAttribute("data-pdf-shade"));
+        if (shade) {
+          // Padding above and below the shaded box.
+          this.spaceBefore(this.base * 0.6);
+          this.applyGap(this.base * 2.5);
+          this.ensure(this.base * 2.5);
+          const top = this.left + ctx.indent;
+          this.page.drawRectangle({ x: top - 5, y: this.y - 4, width: this.width - ctx.indent + 5, height: 4, color: shade });
+          this.y -= 4;
+          this.fresh = false;
+        }
+        await this.flow(el, { ...ctx, pre: true, shade: shade ?? ctx.shade, style: this.styleFor(el, ctx.style) });
+        if (shade) {
+          this.ensure(4);
+          this.page.drawRectangle({ x: this.left + ctx.indent - 5, y: this.y - 4, width: this.width - ctx.indent + 5, height: 4, color: shade });
+          this.y -= 4;
+        }
         this.spaceBefore(this.base * 0.6);
         return;
       }
@@ -796,8 +839,9 @@ class Engine {
             if (!t.space) longest = Math.max(longest, w);
           }
           lineW = Math.max(lineW, cur);
-          minW[col] = Math.max(minW[col], Math.min(longest, avail / 3) + 2 * PADX);
-          maxW[col] = Math.max(maxW[col], lineW + 2 * PADX);
+          // +1: floating-point slack so a word measured to exactly fit doesn't wrap.
+          minW[col] = Math.max(minW[col], Math.min(longest, avail / 3) + 2 * PADX + 1);
+          maxW[col] = Math.max(maxW[col], lineW + 2 * PADX + 1);
         }
         col += cell.span;
       }
