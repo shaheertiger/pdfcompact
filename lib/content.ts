@@ -15,6 +15,8 @@ export type ToolContent = {
   h1: string;
   lead: string;
   answer: string;
+  /** Show the quick answer right under the H1 (in place of the lead) instead of below the tool. */
+  answerFirst: boolean;
   limits: Limit[];
   howto: { question: string; steps: Step[] };
   faq: Faq[];
@@ -151,6 +153,7 @@ export function getToolContent(slug: string, locale: ContentLocale = "en"): Tool
     h1: data.h1,
     lead: data.lead,
     answer: data.answer,
+    answerFirst: data.answerFirst === true,
     limits: data.limits ?? [],
     howto: data.howto ?? { question: "", steps: [] },
     faq: data.faq ?? [],

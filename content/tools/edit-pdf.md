@@ -77,7 +77,7 @@ This is the quickest fix for a wrong date, a typo in a name or an old address. R
 | Change existing words in place | No | [PDF to Word](/pdf-to-word), edit, save as PDF |
 | Add a signature | Use Sign PDF | [Sign PDF](/sign-pdf) |
 | Add a photo or logo | Use Add Image | [Add Image to PDF](/add-image-to-pdf) |
-| Reorder or delete pages | No | [Organize PDF](/organize-pdf) |
+| Reorder or delete pages | No | [Reorder PDF pages](/organize-pdf) |
 
 ## Can I edit a PDF without Adobe Acrobat?
 

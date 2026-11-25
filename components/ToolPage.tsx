@@ -148,7 +148,22 @@ export default function ToolPage({ tool, locale = "en" }: { tool: ToolEntry; loc
           <ToolIcon name={tool.icon} className="hidden sm:block h-8 w-8 shrink-0 text-red-600" />
           <span>{c.h1}</span>
         </h1>
-        <p className="mt-1.5 sm:mt-2 text-sm sm:text-base leading-snug text-zinc-600 dark:text-zinc-400">{c.lead}</p>
+        {c.answerFirst ? (
+          <section
+            aria-labelledby="quick-answer"
+            className="mt-2 sm:mt-3 rounded-xl border-l-4 border-red-600 bg-zinc-50 dark:bg-zinc-900 px-4 py-3 text-left"
+          >
+            <h2 id="quick-answer" className="text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-0.5">
+              {L.quickAnswer}
+            </h2>
+            <p
+              className="text-sm sm:text-base leading-snug text-zinc-800 dark:text-zinc-200"
+              dangerouslySetInnerHTML={{ __html: renderInline(c.answer) }}
+            />
+          </section>
+        ) : (
+          <p className="mt-1.5 sm:mt-2 text-sm sm:text-base leading-snug text-zinc-600 dark:text-zinc-400">{c.lead}</p>
+        )}
         <p className="mt-2 inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-medium text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-500/10 rounded-full px-3 py-1">
           <Lock className="h-3.5 w-3.5" aria-hidden="true" />
           {L.pill}
@@ -166,14 +181,16 @@ export default function ToolPage({ tool, locale = "en" }: { tool: ToolEntry; loc
 
       <div className="mt-10 sm:mt-14 grid gap-10 lg:grid-cols-[1fr_15rem] lg:gap-12">
         <div className="min-w-0">
-          <section aria-labelledby="quick-answer" className="rounded-xl border-l-4 border-red-600 bg-zinc-50 dark:bg-zinc-900 px-5 py-4">
-            <h2 id="quick-answer" className="text-sm font-semibold uppercase tracking-wide text-zinc-500 mb-1">
-              {L.quickAnswer}
-            </h2>
-            <p className="text-zinc-800 dark:text-zinc-200" dangerouslySetInnerHTML={{ __html: renderInline(c.answer) }} />
-          </section>
+          {!c.answerFirst && (
+            <section aria-labelledby="quick-answer" className="mb-8 rounded-xl border-l-4 border-red-600 bg-zinc-50 dark:bg-zinc-900 px-5 py-4">
+              <h2 id="quick-answer" className="text-sm font-semibold uppercase tracking-wide text-zinc-500 mb-1">
+                {L.quickAnswer}
+              </h2>
+              <p className="text-zinc-800 dark:text-zinc-200" dangerouslySetInnerHTML={{ __html: renderInline(c.answer) }} />
+            </section>
+          )}
 
-          <section aria-labelledby="limits" className="mt-8">
+          <section aria-labelledby="limits">
             <h2 id="limits" className="text-xl font-semibold mb-3">{L.limitsHeading(name)}</h2>
             <div className="table-wrap">
               <table className="limits">
