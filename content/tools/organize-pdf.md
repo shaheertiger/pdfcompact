@@ -1,36 +1,37 @@
 ---
-title: "Organize PDF Free — Reorder, Rotate, Delete Pages, No Upload"
-description: "Reorder, rotate and delete PDF pages on a thumbnail grid, add blank pages or pages from another PDF, then save one file. Runs in your browser, no upload."
-h1: "Organize PDF — Reorder, Rotate and Delete Pages"
+title: "Rearrange PDF Pages Free — Reorder & Organize PDF, No Upload"
+description: "Reorder PDF pages by dragging thumbnails: move, swap, reverse, rotate or delete pages and add blank pages, then save one PDF. Free, in your browser, no upload."
+h1: "Rearrange or Reorder PDF Pages — Free PDF Organizer, No Upload"
 lead: "Drop a PDF, then drag, turn or remove pages on the grid and save the new version."
-answer: "To organize a PDF, drop it above and use the page grid: drag a page or tap its arrows to move it, tap the rotate button to turn it 90°, and tap the bin to mark it for deletion. You can also add blank pages or another PDF. Save writes a new file without re-compressing anything; a 24-page, 12 MB file saves in under a second. Nothing is uploaded."
-keywords: ["organize pdf", "rearrange pdf pages", "reorder pdf pages", "rotate one page in pdf", "move pages in pdf", "pdf page organizer"]
-updated: 2026-11-12
+answerFirst: true
+answer: "To reorder PDF pages in 3 steps: drop the PDF below, drag each page thumbnail to its new spot (on a phone, drag the grip or tap the arrows), then press Save PDF. The same grid swaps, reverses, rotates and deletes pages. Pages are copied without re-compressing, and the file never leaves your browser. Free, no sign-up."
+keywords: ["rearrange pdf pages", "reorder pdf pages", "organize pdf", "free pdf organizer", "swap pdf pages", "move pages in pdf", "reverse pdf page order"]
+updated: 2026-11-25
 related: [rotate-pdf, delete-pdf-pages, merge-pdf, extract-pdf-pages]
 faq:
-  - q: "Is it safe to organize a PDF here?"
-    a: "Yes. Thumbnails, rotation and saving all happen in your browser, so the PDF is never uploaded or stored on a server. It keeps working if you go offline after the page loads."
-  - q: "Does rotating a page reduce its quality?"
-    a: "No. Rotation only changes the page's orientation setting; the text and images inside are untouched. You can rotate a page back at any time."
-  - q: "Can I rotate just one page?"
-    a: "Yes. Every thumbnail has its own rotate button that turns that page 90° clockwise per tap. Rotate all turns every page that isn't marked for deletion."
-  - q: "How do I move pages on a phone?"
-    a: "Tap the left and right arrows under a page, or press and drag the grip in its top-left corner. Dragging anywhere else on the grid scrolls the page as usual."
-  - q: "Can I undo a deletion?"
-    a: "Yes. Deleting only marks a page in red until you save. Tap the same button again to keep the page."
-  - q: "Can I combine pages from two PDFs?"
+  - q: "How do I swap two pages in a PDF?"
+    a: "Drag the later page onto the earlier page's spot, then drag the earlier page (now one place further on) to where the later one was. Two drags swap any two pages; the numbers under each page confirm the new order before you save."
+  - q: "How do I move one page to the front or the end?"
+    a: "Drag it to the first or last spot on the grid. On long files the grid scrolls by itself when you hold the page near the top or bottom of the screen. With the arrows, each tap moves the page one place."
+  - q: "How do I reverse the page order of a PDF?"
+    a: "Press Reverse order above the grid. The last page becomes the first in one click, and you can still move single pages afterwards. It's handy for scans that came out back to front."
+  - q: "How do I rearrange PDF pages on an iPhone or Android phone?"
+    a: "Open this page in Safari or Chrome, press the grip in a page's top-left corner and drag, or tap the left and right arrows under the page. Dragging elsewhere on the grid scrolls the page as usual."
+  - q: "Is this PDF organizer really free and private?"
+    a: "Yes. There's no account, watermark or daily cap, and the PDF is read and saved in your browser, so it is never uploaded or stored on a server. It keeps working offline once the page has loaded."
+  - q: "Can I combine and reorder pages from two PDFs?"
     a: "Yes. Press Add another PDF and its pages appear at the end of the grid, where you can move them anywhere. To join whole files without rearranging, [Merge PDF](/merge-pdf) is quicker."
+  - q: "Does rotating or moving a page reduce its quality?"
+    a: "No. Pages are copied as they are and rotation only changes the page's orientation setting, so text stays selectable and images keep their resolution."
   - q: "Are bookmarks and form fields kept?"
     a: "Bookmarks are dropped and fillable fields may stop working. Page content, text, images and links inside a page are kept."
-  - q: "Why do pages take a moment to appear?"
-    a: "Thumbnails are drawn as you scroll, starting with the ones on screen, so a 300-page file opens quickly instead of drawing every page first."
 limits:
   - label: Price
     value: Free. No account, no watermark, no daily cap.
   - label: Where it runs
     value: In your browser. Files never leave your device.
   - label: Actions
-    value: Move, rotate in 90° steps, delete, add blank pages, add pages from more PDFs.
+    value: Move, swap, reverse order, rotate in 90° steps, delete, add blank pages, add pages from more PDFs.
   - label: Rotation
     value: Added to each page's existing rotation, without re-rendering the page.
   - label: Large files
@@ -44,25 +45,41 @@ limits:
   - label: Offline
     value: Works offline once the page has loaded.
 howto:
-  question: "How do I rearrange, rotate and delete PDF pages?"
+  question: "How do I rearrange pages in a PDF?"
   steps:
     - name: "Add your PDF"
-      text: "Drop it on the box above. Thumbnails appear as you scroll, first pages first."
-    - name: "Move pages"
-      text: "Drag a page to a new spot, or use the arrows under it. On a phone, drag by the grip in the corner so the page can still scroll."
-    - name: "Rotate and delete"
-      text: "The rotate button turns a page 90° clockwise per tap. The bin marks a page in red; tap again to keep it."
+      text: "Drop it on the box above. Every page appears as a thumbnail in reading order, first pages first."
+    - name: "Drag pages into the new order"
+      text: "With a mouse, drag a page and drop it where it should go; the target gets a red outline. On a phone, drag by the grip in the corner, or tap the arrows to move a page one place."
+    - name: "Rotate, delete or reverse if needed"
+      text: "The rotate button turns a page 90° clockwise per tap. The bin marks a page in red; tap again to keep it. Reverse order flips the whole file."
     - name: "Check the numbers under each page before saving"
       text: "The big number is the page's new position, the small one its page in the original. Checking these catches the page that was dropped one spot off."
     - name: "Save and download"
       text: "Press Save PDF, then the download button. You can keep editing and save again."
 ---
 
-## How do I rearrange pages in a PDF?
+## How do I reorder pages in a PDF for free?
 
 Every page appears as a thumbnail in reading order. With a mouse, drag a page and drop it on the spot where it should go; the target gets a red outline. With a finger, press the grip in the page's top-left corner and drag, or tap the left and right arrows under the page to move it one place at a time. The big number under each page is its new position and the small "p." number is where it was in the original, so you can check the order at a glance before you save.
 
-Saving copies the pages into a new PDF in the new order. Nothing is re-compressed, so text stays selectable and photos keep their quality.
+Saving copies the pages into a new PDF in the new order. Nothing is re-compressed, so text stays selectable and photos keep their quality. There's no account, no watermark and nothing to install, and the file is never uploaded.
+
+## Swap, move or reverse PDF pages: what to press
+
+Each job below is done on the same grid. The controls are the same for a 3-page form and a 300-page scan.
+
+| Job | Mouse | Phone or tablet | Keyboard |
+| --- | --- | --- | --- |
+| Move a page | Drag the thumbnail | Drag the grip (top-left) | Tab to its arrow, press Enter |
+| Swap two pages | 2 drags | 2 drags with the grip | Arrow buttons, one place per press |
+| Move a page to the front | Drag to spot 1 | Drag the grip to spot 1 | Arrow buttons |
+| Reverse the whole file | Reverse order button | Reverse order button | Tab to it, press Enter |
+| Rotate one page 90° | Rotate button on the page | Same | Tab to it, press Enter |
+| Delete a page | Bin button (tap again to keep) | Same | Tab to it, press Enter |
+| Add a blank page | Add blank page, then drag it | Same, then drag the grip | Add blank page, then arrows |
+
+While you drag near the top or bottom edge of the window, the grid scrolls by itself, so you can carry a page from the end of a long file to the start without letting go.
 
 ## How do I rotate just one page in a PDF?
 
@@ -72,25 +89,29 @@ Tap the rotate button on that page. Each tap turns it 90° clockwise, and a smal
 
 Add blank page puts an empty page at the end of the grid; drag it to where it belongs. It takes the size and orientation of the page just before it, so it matches the document. Add another PDF puts all of that file's pages at the end, with their own thumbnails, ready to be moved between the original pages. You can add several files.
 
-## Can I organize PDF pages on iPhone or Android?
+## Can I rearrange PDF pages on iPhone or Android?
 
 Yes, in Safari or Chrome. The grid shows two pages per row on a phone, and the buttons on each page are 40 pixels square so they are easy to tap. HTML5 drag-and-drop doesn't work on iPhones, so this page uses its own touch dragging on the grip, and the arrow buttons always work as a fallback. Very large files can run out of memory on older phones; split them first with [Split PDF](/split-pdf).
+
+## How to rearrange PDF pages without Acrobat
+
+You don't need Adobe Acrobat or any installed app to rearrange PDF pages. This page does the page-organizing job (move, rotate, delete, insert blank pages, insert pages from another file) in any current browser on Windows, Mac, Linux, ChromeOS, iPhone or Android, and nothing is uploaded.
 
 ## Which page tool should I use?
 
 | Job | Best tool | Why |
 | --- | --- | --- |
-| Reorder, rotate and delete in one pass | Organize PDF (this page) | Every change on one grid, saved once |
+| Reorder, rotate and delete in one pass | This page | Every change on one grid, saved once |
 | Remove a few pages from a long file | [Delete PDF Pages](/delete-pdf-pages) | Type 2, 5-7 instead of scrolling |
 | Pull a few pages out into a new file | [Extract PDF Pages](/extract-pdf-pages) | Original stays complete |
 | Turn every page the same way | [Rotate PDF](/rotate-pdf) | One setting for the whole file |
 | Join whole files end to end | [Merge PDF](/merge-pdf) | No page-by-page work |
 
-## When people organize PDFs
+## When people reorder PDF pages
 
 ### Fixing a scan that came out of order or upside down
 
-Sheet feeders jam, pages get re-fed, and a few come out upside down. Drag the strays back into place, rotate the upside-down ones twice, and delete the duplicate that was scanned twice.
+Sheet feeders jam, pages get re-fed, and a few come out upside down. Drag the strays back into place, rotate the upside-down ones twice, and delete the duplicate that was scanned twice. If the whole stack was fed last page first, press Reverse order.
 
 ### Putting a signed page back into a contract
 
@@ -106,7 +127,7 @@ When printing a booklet double-sided, each chapter should start on a right-hand 
 
 ### Interleaving front and back scans
 
-If your scanner made one file of front sides and another of back sides, add the second file and move each back page next to its front. For long stacks, merging first with [Merge PDF](/merge-pdf) and then reordering here keeps everything on one grid.
+If your scanner made one file of front sides and another of back sides, add the second file and move each back page next to its front. If the backs were scanned in reverse, press Reverse order first, then reorder. For long stacks, merging first with [Merge PDF](/merge-pdf) keeps everything on one grid.
 
 ## Troubleshooting
 

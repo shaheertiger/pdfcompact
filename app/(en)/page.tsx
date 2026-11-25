@@ -5,10 +5,10 @@ import ToolIcon from "@/components/ToolIcon";
 import JsonLd from "@/components/JsonLd";
 import ToolFilter from "@/components/ToolFilter";
 import { registry, groups } from "@/lib/registry";
-import { siteUrl, siteName, organizationJsonLd, organizationId } from "@/lib/site";
+import { siteUrl, siteName, siteAlternateNames, organizationJsonLd, organizationId } from "@/lib/site";
 
-const title = "Free PDF Tools — Compress, Merge, OCR, No Upload | PDFCompact";
-const description = `${registry.length} free PDF tools that run in your browser: compress, merge, split, OCR, convert, sign and protect. No upload, no sign-up, no watermark.`;
+const title = `PDF Compact — Compress PDF Free + ${registry.length} PDF Tools, No Upload`;
+const description = `PDFCompact compresses PDFs for free, plus ${registry.length - 1} more tools to merge, rearrange, split, OCR, convert and sign. In your browser: no upload, no sign-up.`;
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -19,12 +19,14 @@ export const metadata: Metadata = {
 const jobs: { job: string; slug: string }[] = [
   { job: "Make a PDF small enough to email or upload", slug: "compress-pdf" },
   { job: "Join several PDFs into one", slug: "merge-pdf" },
+  { job: "Reorder, rearrange or swap PDF pages", slug: "organize-pdf" },
   { job: "Send only some pages of a PDF", slug: "extract-pdf-pages" },
   { job: "Make a scanned PDF searchable or copyable", slug: "ocr-pdf" },
   { job: "Scan paper documents with your phone", slug: "scan-to-pdf" },
   { job: "Edit the text of a PDF in Word", slug: "pdf-to-word" },
   { job: "Turn photos into one PDF", slug: "jpg-to-pdf" },
   { job: "Sign a contract or form", slug: "sign-pdf" },
+  { job: "Convert a PDF to a TXT file", slug: "pdf-to-text" },
   { job: "See what changed between two versions", slug: "compare-pdf" },
   { job: "Stop others opening a PDF", slug: "protect-pdf" },
   { job: "Fit a portal's 2 MB or 5 MB limit by splitting", slug: "split-pdf-by-size" },
@@ -73,6 +75,7 @@ export default function Home() {
         "@type": "WebSite",
         "@id": `${siteUrl}/#website`,
         name: siteName,
+        alternateName: siteAlternateNames,
         url: siteUrl,
         description,
         publisher: { "@id": organizationId },
@@ -108,11 +111,11 @@ export default function Home() {
       <section className="bg-gradient-to-b from-red-50 to-white dark:from-red-950/20 dark:to-zinc-950">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 pt-6 pb-5 sm:pt-16 sm:pb-12 text-center">
           <h1 className="text-[1.6rem] leading-tight sm:text-5xl font-bold tracking-tight text-balance">
-            Free PDF Tools — Compress, Merge, Convert and OCR in Your Browser
+            PDFCompact — Compress PDF Free, Plus Merge, Convert and OCR
           </h1>
           <p className="mt-3 sm:mt-4 text-sm sm:text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
-            {registry.length} tools for PDFs and images. Your files are processed on your own device, never
-            uploaded. No sign-up, no watermark.
+            PDF Compact makes PDFs smaller, and {registry.length - 1} more tools handle the rest of the job, for
+            PDFs and images. Your files are processed on your own device, never uploaded. No sign-up, no watermark.
           </p>
           <ul className="mt-4 sm:mt-6 grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-x-3 gap-y-1.5 sm:gap-x-5 sm:gap-y-2 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 max-w-xs sm:max-w-none mx-auto text-left">
             <li className="flex items-center gap-1.5"><Lock className="h-4 w-4 text-red-600" aria-hidden="true" /> Nothing uploaded</li>
@@ -201,6 +204,12 @@ export default function Home() {
         <p>
           Joins two or more PDFs into one file in the order you choose, without touching the quality of
           any page. <Link href="/merge-pdf">Merge PDFs</Link>.
+        </p>
+        <h3>Rearrange PDF Pages</h3>
+        <p>
+          Shows every page as a thumbnail: drag pages into a new order, swap or reverse them, rotate one
+          page, delete the ones you don&apos;t need, and save one PDF.{" "}
+          <Link href="/organize-pdf">Rearrange PDF pages</Link>.
         </p>
         <h3>OCR PDF</h3>
         <p>

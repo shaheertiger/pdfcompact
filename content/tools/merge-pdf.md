@@ -66,7 +66,7 @@ Open this page in Safari or Chrome, tap the box and choose your files from Files
 
 ## Can I merge only some pages from each PDF?
 
-Not in one step on this page. Merge copies every page of every file. To use only part of a file, first run it through [Extract PDF Pages](/extract-pdf-pages) or [Delete PDF Pages](/delete-pdf-pages), then merge the trimmed copy. After merging you can fine-tune the order of individual pages in [Organize PDF](/organize-pdf).
+Not in one step on this page. Merge copies every page of every file. To use only part of a file, first run it through [Extract PDF Pages](/extract-pdf-pages) or [Delete PDF Pages](/delete-pdf-pages), then merge the trimmed copy. After merging you can [reorder individual PDF pages](/organize-pdf).
 
 ## Merge PDF compared with other ways to combine files
 
@@ -97,7 +97,7 @@ Join chapters, appendices or lecture handouts written by different people into o
 
 ### Scanned double-sided documents
 
-If your scanner produced one file of front sides and another of back sides, merging puts them end to end. You can then drag each back side next to its front in [Organize PDF](/organize-pdf).
+If your scanner produced one file of front sides and another of back sides, merging puts them end to end. You can then drag each back side next to its front when you [rearrange the PDF pages](/organize-pdf).
 
 ## Troubleshooting
 
@@ -105,7 +105,7 @@ If your scanner produced one file of front sides and another of back sides, merg
 | --- | --- | --- |
 | A file is marked in red: "couldn't be read" | Open it in a PDF viewer to confirm it isn't damaged, or re-save it with Print to PDF, then add it again. | The file is corrupted or isn't really a PDF. |
 | A file is marked in red: "needs a password" | Remove the open password first, then merge. | Files locked with an open (user) password can't be read without it. |
-| Pages are in the wrong order | Reorder the files before merging, or fix single pages afterwards in Organize PDF. | The top file in the list becomes the first pages. |
+| Pages are in the wrong order | Reorder the files before merging, or rearrange single pages afterwards. | The top file in the list becomes the first pages. |
 | Merged file is too big to email | Run it through Compress PDF, or split it with Split PDF by Size. | Merging adds file sizes together; it doesn't shrink anything. |
 | Form fields stopped working | Flatten each form first with Flatten PDF, then merge. | Fields from different files can clash when combined. |
 | Browser tab crashes on a phone | Merge fewer or smaller files at a time, or use a laptop. | Mobile browsers give each tab limited memory. |

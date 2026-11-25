@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { ChevronLeft, ChevronRight, FilePlus, GripVertical, RotateCw, SquarePlus, Trash2, Undo2 } from "lucide-react";
+import { ArrowDownUp, ChevronLeft, ChevronRight, FilePlus, GripVertical, RotateCw, SquarePlus, Trash2, Undo2 } from "lucide-react";
 import type { PDFPage } from "@cantoo/pdf-lib";
 import Dropzone from "@/components/Dropzone";
 import { ActionButton, ErrorNote, FileBar, InfoNote, Progress, ResultPanel, SecondaryButton, type ResultFile } from "@/components/ui/kit";
@@ -210,6 +210,10 @@ export default function OrganizeClient() {
         >
           <RotateCw className="h-4 w-4" aria-hidden="true" />
           Rotate all
+        </SecondaryButton>
+        <SecondaryButton onClick={() => change((prev) => [...prev].reverse())} disabled={busy || items.length < 2}>
+          <ArrowDownUp className="h-4 w-4" aria-hidden="true" />
+          Reverse order
         </SecondaryButton>
         <input
           ref={addInput}

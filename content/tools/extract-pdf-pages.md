@@ -1,11 +1,12 @@
 ---
 title: "Extract PDF Pages Free — Pick Pages, Save 1 PDF or a ZIP"
-description: "Pull chosen pages out of a PDF by tapping thumbnails or typing 1-3, 8. Save them as one new PDF or as separate files in a ZIP. Runs in your browser, no upload."
-h1: "Extract PDF Pages — Save Selected Pages as a New PDF"
+description: "Free PDF page extractor: tap thumbnails or type 1-3, 8 to extract PDF pages into one new PDF, or one file per page in a ZIP. In your browser, no upload."
+h1: "Extract PDF Pages — Free PDF Page Extractor, No Upload"
 lead: "Drop a PDF, tap the pages you want or type their numbers, and save them as a new file."
-answer: "To extract pages from a PDF, drop it above and tap the pages you want, or type numbers and ranges such as 1-3, 8. Choose One PDF to get all of them in a single file, or Separate PDFs to get one file per page in a ZIP. Pages are copied exactly, without re-compressing, and your original file is left untouched. Nothing is uploaded."
+answerFirst: true
+answer: "To extract pages from a PDF, drop it below and tap the pages you want, or type numbers and ranges such as 1-3, 8. Choose One PDF to get all of them in a single file, or Separate PDFs to get one file per page in a ZIP. Pages are copied exactly, without re-compressing, and your original file is left untouched. Nothing is uploaded."
 keywords: ["extract pdf pages", "extract pages from pdf", "save one page of a pdf", "select pages from pdf"]
-updated: 2026-11-12
+updated: 2026-11-25
 related: [split-pdf, delete-pdf-pages, organize-pdf, merge-pdf]
 faq:
   - q: "Is it safe to extract pages here?"
@@ -13,11 +14,13 @@ faq:
   - q: "How do I save just one page of a PDF?"
     a: "Tap that page and press Extract. You get a one-page PDF named like report-page-4.pdf."
   - q: "In what order are the pages saved?"
-    a: "In their original page order, whatever order you tapped them in. To change the order, extract them and then rearrange in [Organize PDF](/organize-pdf)."
+    a: "In their original page order, whatever order you tapped them in. To change the order, extract them and then [rearrange the PDF pages](/organize-pdf)."
   - q: "Is the quality the same as the original?"
     a: "Yes. Pages are copied as they are, so text stays selectable and images keep their resolution."
   - q: "What's the difference from Split PDF?"
     a: "Extract makes one new file from the pages you pick. [Split PDF](/split-pdf) cuts the whole document into several parts by ranges or page count."
+  - q: "Can I extract only the odd or even pages?"
+    a: "Yes. Press Odd pages or Even pages above the grid to select every odd or even page, then press Extract. This is useful for splitting a double-sided scan into fronts and backs."
   - q: "Can I extract pages from a password-protected PDF?"
     a: "Files with only a permissions password work. Files that need a password to open must be unlocked first."
 limits:
@@ -30,7 +33,7 @@ limits:
   - label: Output
     value: One PDF with every selected page, or one PDF per page in a ZIP.
   - label: Page order
-    value: Original order. Rearrange afterwards in Organize PDF if needed.
+    value: Original order. Reorder the pages afterwards if needed.
   - label: What's kept
     value: Page content, text, fonts, images and rotation, plus the title and author.
   - label: What's dropped
@@ -85,7 +88,7 @@ When a lender or landlord asks for page 1 of a tax return or the latest pay stub
 | Problem | Fix | Why it happens |
 | --- | --- | --- |
 | "Isn't a page or range" | Use numbers, commas and dashes only, like 1-3, 8. | The box couldn't read what was typed. |
-| The pages are in the wrong order | Rearrange them in Organize PDF after extracting. | Pages are always saved in their original order. |
+| The pages are in the wrong order | Reorder the pages after extracting. | Pages are always saved in their original order. |
 | "This PDF is password-protected" | Remove the open password first. | It can't be read without that password. |
 | I got a ZIP but wanted one file | Switch to One PDF and extract again. | Separate PDFs makes one file per page. |
 | The ZIP won't open on a phone | Open it in the Files app (iPhone) or Files by Google (Android). | Some phones need a file manager to unpack ZIP files. |

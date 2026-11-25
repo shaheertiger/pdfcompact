@@ -84,7 +84,7 @@ Scanning a stack of two-sided forms through a copier's document feeder often fli
 
 ### A landscape table inside a thesis or report
 
-University submission portals and examiners expect each page to open readable. Turn the wide tables and charts so they display the right way, then check the order in [Organize PDF](/organize-pdf).
+University submission portals and examiners expect each page to open readable. Turn the wide tables and charts so they display the right way, then [rearrange the PDF pages](/organize-pdf) if the order is off.
 
 ### Phone scans going to an insurer or HR
 

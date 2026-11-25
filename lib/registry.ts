@@ -79,7 +79,7 @@ export const registry: ToolEntry[] = [
   // Organize
   { slug: "merge-pdf", name: "Merge PDF", short: "Combine several PDFs into one file, in any order.", group: "organize", icon: "Combine", size: "main", legacy: ["/merge", "/tools/merge-pdf", "/combine-pdf"], es: { slug: "unir-pdf", name: "Unir PDF" } },
   { slug: "split-pdf", name: "Split PDF", short: "Split by page ranges or every N pages, download as ZIP.", group: "organize", icon: "Scissors", size: "main", legacy: ["/tools/split"], es: { slug: "dividir-pdf", name: "Dividir PDF" } },
-  { slug: "organize-pdf", name: "Organize PDF", short: "Reorder, rotate and delete pages by dragging thumbnails.", group: "organize", icon: "LayoutGrid", size: "main", legacy: ["/tools/rearrange", "/rearrange-pdf"] },
+  { slug: "organize-pdf", name: "Rearrange PDF Pages", short: "Reorder, move, swap, rotate and delete pages by dragging thumbnails.", group: "organize", icon: "LayoutGrid", size: "main", legacy: ["/tools/rearrange", "/rearrange-pdf"] },
   { slug: "delete-pdf-pages", name: "Delete PDF Pages", short: "Click the pages you don't want and save the rest.", group: "organize", icon: "Trash2", size: "small", legacy: ["/tools/remove-pages", "/remove-pdf-pages"] },
   { slug: "extract-pdf-pages", name: "Extract PDF Pages", short: "Pull chosen pages out into a new PDF.", group: "organize", icon: "FileOutput", size: "small", legacy: ["/tools/extract"] },
   { slug: "rotate-pdf", name: "Rotate PDF", short: "Turn pages 90° or 180°, one page or all of them.", group: "organize", icon: "RotateCw", size: "main" },

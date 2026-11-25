@@ -10,7 +10,7 @@ The template (`components/ToolPage.tsx`) renders it in this order, the tool alwa
 | 3 | H1 | `h1` | `Tool — job`, ≤ 70 chars |
 | 4 | Lead | `lead` | one line, ≤ 120 chars: what to do |
 | 5 | The tool | `components/tools/<Name>Client.tsx` | above the fold on mobile |
-| 6 | Quick answer | `answer` | 40–70 words, the direct answer with numbers |
+| 6 | Quick answer | `answer` | 40–70 words, the direct answer with numbers. `answerFirst: true` shows it right under the H1 (in place of the lead) for pages rewritten around a Search Console query |
 | 7 | Limits table | `limits` | 6–9 rows; must include **Price** and **Where it runs** |
 | 8 | How-to | `howto.question` + `howto.steps` | H2 is a question; 3–7 named steps; name the step people get wrong |
 | 9 | Searches | body `##` | 3+ H2s that are real long-tail queries |
