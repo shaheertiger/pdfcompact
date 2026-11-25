@@ -23,6 +23,8 @@ faq:
     a: "Yes. Press Odd pages or Even pages above the grid to select every odd or even page, then press Extract. This is useful for splitting a double-sided scan into fronts and backs."
   - q: "Can I extract pages from a password-protected PDF?"
     a: "Files with only a permissions password work. Files that need a password to open must be unlocked first."
+  - q: "What does \"Page extraction is not allowed in the source PDF documents\" mean?"
+    a: "The PDF has a permissions (owner) password that marks page assembly and extraction as not allowed, and Adobe Acrobat honours that flag when you extract or combine pages. The file still opens without a password. Ask the sender for an unrestricted copy, or, if you have the right to reuse the pages, extract them here: in our tests restricted files opened and the pages were saved normally."
 limits:
   - label: Price
     value: Free. No account, no watermark, no daily cap.
@@ -61,6 +63,18 @@ Tap the pages you need and press Extract. A run such as pages 4 to 9 is saved as
 
 Choose Separate PDFs before you press Extract. Each selected page becomes its own PDF, such as `report-page-8.pdf`, in one ZIP. For every page of the document, [Split PDF](/split-pdf) with Every page is quicker.
 
+## "Page extraction is not allowed in the source PDF documents": what it means
+
+Adobe Acrobat shows this error when you try to extract, combine or insert pages from a PDF whose security settings forbid it. The author saved the file with a **permissions password** (also called an owner password): anyone can open and read it, but the file carries flags such as "Document Assembly: Not Allowed" and "Page Extraction: Not Allowed". Acrobat refuses; you can see the flags under File > Properties > Security. Bank statements, e-tickets, invoices and course packs often come this way.
+
+What this tool does with such a file: we tested owner-password PDFs with RC4 128-bit, AES 128-bit and AES 256-bit encryption, printing allowed and everything else blocked. Each opened, showed its thumbnails, and extracting pages 2–3 gave a normal, unencrypted 2-page PDF with selectable text. A file that needs a password just to **open** is different: it's refused with "This PDF is password-protected", because its pages can't be read without that password.
+
+Your legitimate options, best first:
+
+- **Ask the sender** for a copy without restrictions, or for just the pages you need.
+- **If you know the permissions password**, remove it in Acrobat (File > Properties > Security > No Security), then extract as usual.
+- **If the document is yours or you're entitled to reuse it** (your own bank statement, a form you filled in), extract the pages here. The copy is saved without the restriction flags, so respect the author's terms and copyright when you share it.
+
 ## Extract, split or delete?
 
 | You want | Use | Result |
@@ -90,5 +104,6 @@ When a lender or landlord asks for page 1 of a tax return or the latest pay stub
 | "Isn't a page or range" | Use numbers, commas and dashes only, like 1-3, 8. | The box couldn't read what was typed. |
 | The pages are in the wrong order | Reorder the pages after extracting. | Pages are always saved in their original order. |
 | "This PDF is password-protected" | Remove the open password first. | It can't be read without that password. |
+| Acrobat says "Page extraction is not allowed" | Extract the pages here, or ask for an unrestricted copy. | The file has a permissions password that blocks page extraction. |
 | I got a ZIP but wanted one file | Switch to One PDF and extract again. | Separate PDFs makes one file per page. |
 | The ZIP won't open on a phone | Open it in the Files app (iPhone) or Files by Google (Android). | Some phones need a file manager to unpack ZIP files. |

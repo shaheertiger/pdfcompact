@@ -5,7 +5,7 @@ h1: "Compress PDF — Make a PDF Smaller for Email and Uploads"
 lead: "Drop one or more PDFs, pick a level or a target size, check the new size, download."
 answer: "To compress a PDF, add it, keep Recommended and press Compress. In our tests, photo-heavy PDFs shrank by 90–96%, JPEG scans by 32% (72% on Strong) and text-only files by just 4–7%, because text is already compact. For a hard limit, choose a target such as 1 MB or 500 KB. It all runs in your browser; nothing is uploaded."
 keywords: ["compress pdf", "reduce pdf size", "compress pdf to 1mb", "compress pdf to 200kb", "make pdf smaller", "pdf compressor free", "shrink pdf for email"]
-updated: 2026-11-12
+updated: 2026-11-25
 related: [split-pdf-by-size, merge-pdf, ocr-pdf, compress-image]
 faq:
   - q: "Is it safe to compress a PDF here?"
@@ -81,21 +81,34 @@ The photo PDFs in our tests stored their pictures without lossy compression, whi
 
 Each file took under a second in desktop Chrome and 2–3 seconds with the CPU slowed to phone speed.
 
+## How do I compress a PDF to 1 MB (or 2 MB)?
+
+Choose **Compress to a specific size**, tap **1 MB** (or **2 MB**) and press Compress. The tool tries image settings from gentle to strong and keeps the gentlest one that fits, then tells you the size it reached. A PDF already under the target is handed back unchanged. In our tests every file below reached 1 MB with text still selectable:
+
+| Test file | Original | Light | Recommended | Strong | 1 MB target | 2 MB target |
+| --- | --- | --- | --- | --- | --- | --- |
+| 6-page brochure, lossless photos | 13.5 MB | 381 KB | 203 KB | 84 KB | 381 KB | 381 KB |
+| 10-page colour scan, 300 DPI | 8.0 MB | 2.44 MB | 1.13 MB | 586 KB | 834 KB (125 DPI) | 1.52 MB (170 DPI) |
+| 30-page colour scan, 300 DPI | 24.1 MB | 7.42 MB | 3.45 MB | 1.74 MB | 930 KB (72 DPI) | 1.74 MB (100 DPI) |
+| 3-page colour invoice scan | 1.04 MB | 604 KB | 473 KB | 175 KB | 604 KB | already under |
+
+The DPI in brackets is the image resolution the target needed. As a rule of thumb, 1 MB holds about 10 scanned pages at a sharp 125 DPI, or about 30 pages at 72 DPI, which is readable on screen but soft when printed. Above roughly 30 scanned pages, don't squeeze harder: use [Split PDF by Size](/split-pdf-by-size) to cut the file into 1 MB or 2 MB parts, with nothing re-compressed. Text-only PDFs over 1 MB usually owe their size to embedded fonts, which this tool keeps, so splitting is the way there too.
+
 ## How do I compress a PDF to a specific size?
 
 Choose **Compress to a specific size**, then pick 200 KB, 500 KB, 1 MB or 2 MB, or type your own number. The tool steps through image settings, from gentle to strong, and keeps the **gentlest one that fits**, so a 2 MB target never gets more compression than it needs.
 
-- **2 MB and 1 MB**: the most common portal limits. All our photo and scan files fit with the Light settings, so quality stays high.
+- **2 MB and 1 MB**: the most common portal limits; see the measured table above.
 - **500 KB**: our brochure landed at 421 KB, the photo report at 419 KB and the 5-page scan at 381 KB.
 - **200 KB**: tight, but reachable for short documents: the 4 MB brochure reached 195 KB, the 5-page scan 175 KB and even the 24-page photo file 158 KB. Photos look soft at this size.
 
-If the target can't be met while keeping text as text, the tool says so and shows the smallest size it reached. Then you have two options. **Rasterize pages** renders every page as a picture; it can shrink scans and unusual image formats much further, but text stops being selectable or searchable, and on text-heavy files it often makes things bigger (the tool tells you). Or use [Split PDF by Size](/split-pdf-by-size) to cut the file into parts that each fit, with nothing re-compressed.
+If the target can't be met while keeping text as text, the tool says so and shows the smallest size it reached. Then either **Rasterize pages**, which renders every page as a picture (text stops being selectable, and text-heavy files often grow; the tool tells you), or split the file by size as above.
 
 ## Why do scanned, searchable and digital PDFs compress differently?
 
 **Scanned PDFs** are a stack of photos, one per page, so they have the most to lose. Scanners often save at 200–300 DPI, more than a screen or portal needs; downsampling to 150 or 100 DPI gave our scan its 32–72% savings.
 
-**Searchable (OCR'd) scans** are the same photos with an invisible text layer on top. The photos compress exactly like a plain scan, and the text layer is left alone, so search and copy still work afterwards. If your scan isn't searchable yet, run [OCR PDF](/ocr-pdf) first, then compress.
+**Searchable (OCR'd) scans** compress like plain scans; the invisible text layer is left alone, so search still works. To make a scan searchable, run [OCR PDF](/ocr-pdf) first.
 
 **Digital PDFs** (exported from Word, Google Docs or a browser) draw text from fonts, which is already compact. Here the tool can only tidy the file: it removes objects nothing points to, merges identical images stored twice, and packs the structure into compressed object streams. That's the 4–7% we measured. It doesn't strip or subset fonts, so text always looks exactly as before.
 
@@ -103,7 +116,7 @@ If the target can't be met while keeping text as text, the tool says so and show
 
 ## Does converting to grayscale make a PDF smaller?
 
-A little for photos, a lot for some scans. With Recommended plus grayscale, our brochure went from 421 KB to 386 KB, while the clean scan went from "no change" to 170 KB, 40% smaller, because a gray image stores one channel instead of three. Grayscale only changes images; coloured text, logos drawn as vectors and highlighted table rows keep their colour. Use it when a form asks for black-and-white copies.
+A little for photos, a lot for some scans. With Recommended plus grayscale, our brochure went from 421 KB to 386 KB, while the clean scan went from "no change" to 170 KB, 40% smaller, because a gray image stores one channel instead of three. Grayscale here only changes images; to turn coloured text and drawings grey too, use [Black and White PDF](/black-and-white-pdf).
 
 ## Will compressing a PDF reduce the quality?
 
@@ -113,11 +126,11 @@ Text, fonts, tables and vector drawings are never re-rendered, so they stay shar
 
 ### For Gmail's 25 MB attachment limit
 
-Gmail lets you attach up to 25 MB per email; anything larger is turned into a Google Drive link, which some recipients can't open at work. Recommended usually brings photo-heavy files far under the limit. The limit covers all attachments together; the results show the batch total.
+Gmail attaches up to 25 MB per email, counting all attachments together; anything larger becomes a Google Drive link. Recommended usually brings photo-heavy files far under the limit.
 
 ### For Outlook's 20 MB limit
 
-Outlook.com and most work accounts cap attachments at about 20 MB (your company's IT team can set a lower limit). Recommended is usually enough.
+Outlook.com and most work accounts cap attachments at about 20 MB, sometimes lower. Recommended is usually enough.
 
 ### For job portals that cap uploads at 2–5 MB
 
@@ -125,7 +138,7 @@ Many applicant-tracking systems accept only one PDF of 2–5 MB, and some much l
 
 ### For IRCC (Canada immigration) uploads
 
-IRCC's online application asks for one file per document slot, with a small per-file limit shown next to each upload button; it has commonly been 4 MB at the time of writing. Scanned passports, bank letters and police certificates are exactly the kind of file Strong shrinks most. Check that stamps stay legible.
+IRCC's online application shows a per-file limit next to each upload button, commonly 4 MB at the time of writing. Scanned passports and bank letters are exactly what Strong shrinks most; check that stamps stay legible.
 
 ### For US visa and immigration uploads
 
@@ -133,11 +146,7 @@ US government portals set their own limits per upload page. The National Visa Ce
 
 ### For WhatsApp on mobile data
 
-WhatsApp accepts documents up to 2 GB, but a 20 MB PDF is slow to send and receive on mobile data and fills up the other person's phone. A 400 KB brochure opens instantly in a chat; a 4 MB one doesn't.
-
-### For university and college applications
-
-Admissions portals usually want transcripts and letters as separate PDFs under a stated size, often 1–10 MB. Set the target to that limit for scanned transcripts.
+WhatsApp accepts documents up to 2 GB, but a 20 MB PDF is slow on mobile data. A 400 KB brochure opens instantly in a chat; a 4 MB one doesn't.
 
 ## Troubleshooting
 
