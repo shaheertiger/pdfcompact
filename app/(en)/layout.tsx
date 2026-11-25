@@ -22,9 +22,9 @@ export const viewport: Viewport = {
   themeColor: "#dc2626",
 };
 
-const defaultTitle = "Free PDF Tools — Compress, Merge, OCR, No Upload | PDFCompact";
+const defaultTitle = `PDF Compact — Compress PDF Free + ${registry.length} PDF Tools, No Upload`;
 const defaultDescription =
-  `${registry.length} free PDF tools that run in your browser: compress, merge, split, OCR, convert, sign and more. No upload, no sign-up, no watermark.`;
+  `PDFCompact compresses PDFs for free, plus ${registry.length - 1} more tools to merge, rearrange, split, OCR, convert and sign. In your browser: no upload, no sign-up.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

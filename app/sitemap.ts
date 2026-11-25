@@ -6,6 +6,8 @@ import { getToolContent } from "@/lib/content";
 // lastmod is honest: tool pages use the `updated` date from their content
 // file, which only changes when the facts on the page change.
 const STATIC_UPDATED = "2026-11-12";
+// The homepage changes on its own schedule (title, brand copy, job table).
+const HOME_UPDATED = "2026-11-25";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = ["", "/how-it-works", "/about", "/contact", "/privacy", "/terms"];
@@ -13,6 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${siteUrl}${path}`,
     lastModified: STATIC_UPDATED,
   }));
+  entries[0].lastModified = HOME_UPDATED;
   entries[0].alternates = { languages: { en: siteUrl, es: `${siteUrl}/es` } };
   entries.push({
     url: `${siteUrl}/es`,

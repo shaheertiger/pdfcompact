@@ -8,7 +8,7 @@ export function GET() {
   const lines = [
     "# PDFCompact",
     "",
-    `> PDFCompact is a free collection of ${registry.length} PDF and image tools that run entirely in the browser. Files are processed on the user's device with JavaScript and WebAssembly and are never uploaded. No account and no watermark.`,
+    `> PDFCompact (also written PDF Compact) compresses PDFs and is a free collection of ${registry.length} PDF and image tools that run entirely in the browser. Files are processed on the user's device with JavaScript and WebAssembly and are never uploaded. No account and no watermark.`,
     "",
   ];
   for (const g of groups) {

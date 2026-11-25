@@ -59,6 +59,12 @@ html {
 .table-wrap thead + tbody tr:first-child td {
   border-top: 1px solid rgb(0 0 0 / 0.08);
 }
+/* Phones: tighter cells so 3–4 column tables fit 360px without sideways scrolling. */
+@media (max-width: 639px) {
+  .table-wrap table { font-size: 0.8125rem; }
+  .table-wrap th,
+  .table-wrap td { padding: 0.5rem 0.55rem; overflow-wrap: anywhere; hyphens: auto; }
+}
 table.limits th {
   width: 34%;
   font-weight: 600;
