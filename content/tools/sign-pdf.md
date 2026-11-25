@@ -1,11 +1,12 @@
 ---
 title: "Sign PDF Free — Draw, Type or Upload a Signature, No Upload"
-description: "Sign a PDF in your browser: draw with your finger, type your name in a script style or upload a photo of your signature. Add the date, sign every page."
-h1: "Sign PDF — Add Your Signature to a PDF"
+description: "Sign a PDF online free: draw, type or upload your signature, drag it onto the line, add the date or initials on every page. Runs in your browser, no upload."
+h1: "Sign PDF Online Free — Add an Electronic Signature to a PDF"
 lead: "Drop a PDF, draw or type your signature, drag it onto the line, download the signed copy."
+answerFirst: true
 answer: "To sign a PDF, drop the file, then draw your signature with a finger or mouse, type your name in one of three script styles, or upload a photo of your signature with the paper background removed. Drag it onto the signature line, resize it, add today's date if needed, and download. It runs in your browser. This is a visual signature, not a certificate-based digital signature."
 keywords: ["sign pdf", "sign pdf online free", "add signature to pdf", "electronic signature pdf", "sign pdf on iphone"]
-updated: 2026-11-12
+updated: 2026-11-25
 related: [edit-pdf, add-image-to-pdf, protect-pdf, flatten-pdf]
 faq:
   - q: "Is a signature added this way legally binding?"

@@ -1,11 +1,12 @@
 ---
-title: "PDF to Text Free — Copy or Save as .txt in Seconds, No Upload"
-description: "Extract all the text from a PDF page by page, preview it, copy it in one tap or save a .txt file. Spots scanned PDFs and points you to OCR. Nothing uploaded."
-h1: "PDF to Text — Pull the Text Out of a PDF"
+title: "PDF to TXT Free — Convert PDF to a Text File, No Upload"
+description: "Convert PDF to TXT free: extract all the text page by page, preview it, copy it in one tap or save a UTF-8 .txt file. Spots scanned PDFs. Nothing is uploaded."
+h1: "PDF to TXT — Convert a PDF to a Plain Text File, Free"
 lead: "Drop a PDF to see its text, then copy it or download it as a .txt file."
-answer: "To convert a PDF to text, drop it above. The text is read page by page in your browser, with a progress bar, and shown in a preview you can copy in one tap or save as a UTF-8 .txt file. A 10-page report takes under a second. Scanned PDFs have no text to read, so the tool tells you and points you to OCR PDF."
-keywords: ["pdf to text", "extract text from pdf", "pdf to txt", "copy text from pdf", "convert pdf to text free"]
-updated: 2026-11-12
+answerFirst: true
+answer: "To convert a PDF to TXT, drop it below. The text is read page by page in your browser, with a progress bar, and shown in a preview you can copy in one tap or save as a UTF-8 .txt file. A 10-page report takes under a second. Scanned PDFs have no text to read, so the tool tells you and points you to OCR PDF."
+keywords: ["pdf to txt", "pdf to text", "pdf to text file", "convert pdf to txt", "extract text from pdf", "copy text from pdf", "convert pdf to text free"]
+updated: 2026-11-25
 related: [ocr-pdf, pdf-to-word, pdf-to-excel]
 faq:
   - q: "Is it safe to extract text here?"
@@ -18,6 +19,8 @@ faq:
     a: "Optional markers showing where each page starts. Untick the box above the preview to remove them; the preview and the download update at once."
   - q: "What encoding is the .txt file?"
     a: "UTF-8, which opens correctly in Notepad, TextEdit, Word and Google Docs and keeps accents, symbols and non-Latin scripts."
+  - q: "Can I convert a PDF to TXT on my phone?"
+    a: "Yes. Open this page in Safari or Chrome, choose the PDF, then press Copy text or download the .txt file. Nothing is uploaded, so it works on private documents too."
   - q: "Can I get an editable Word file instead?"
     a: "Yes, [PDF to Word](/pdf-to-word) makes a .docx with paragraphs you can edit and restyle."
 limits:
