@@ -46,7 +46,7 @@ export const groups: Group[] = [
   {
     id: "optimize",
     name: "Optimize PDF",
-    blurb: "Make files smaller, flatten them, or compare two versions.",
+    blurb: "Make files smaller, grayscale or flat, or compare two versions.",
   },
   {
     id: "convert-from",
@@ -56,12 +56,12 @@ export const groups: Group[] = [
   {
     id: "convert-to",
     name: "Convert to PDF",
-    blurb: "Turn photos, Word, Excel and e-books into a PDF.",
+    blurb: "Turn photos, Word, Excel, notebooks, Markdown and e-books into a PDF.",
   },
   {
     id: "edit-sign",
     name: "Edit and Sign",
-    blurb: "Add text, signatures, page numbers, watermarks and passwords.",
+    blurb: "Add text, signatures, page numbers, watermarks and passwords, or strip metadata.",
   },
   {
     id: "scan-ocr",
@@ -91,6 +91,7 @@ export const registry: ToolEntry[] = [
   { slug: "compress-pdf", name: "Compress PDF", short: "Shrink a PDF with 3 levels and see the new size first.", group: "optimize", icon: "Minimize2", size: "main", es: { slug: "comprimir-pdf", name: "Comprimir PDF" } },
   { slug: "flatten-pdf", name: "Flatten PDF", short: "Lock form fields and annotations into the page.", group: "optimize", icon: "Layers", size: "small" },
   { slug: "compare-pdf", name: "Compare PDF", short: "Highlight every changed word, number and date between two PDFs.", group: "optimize", icon: "Diff", size: "main" },
+  { slug: "black-and-white-pdf", name: "Black and White PDF", short: "Convert a colour PDF to grayscale or pure black and white, text kept.", group: "optimize", icon: "Contrast", size: "small" },
   { slug: "pdf-to-pdfa", name: "PDF to PDF/A", short: "Make an archive-ready PDF/A-2b copy of a document.", group: "optimize", icon: "FileArchive", size: "main" },
 
   // Convert from PDF
@@ -105,6 +106,8 @@ export const registry: ToolEntry[] = [
   { slug: "jpg-to-pdf", name: "JPG to PDF", short: "Turn JPG, PNG or WebP photos into one PDF.", group: "convert-to", icon: "FileImage", size: "main", legacy: ["/tools/image-to-pdf", "/image-to-pdf", "/jpeg-to-pdf", "/png-to-pdf"] },
   { slug: "word-to-pdf", name: "Word to PDF", short: "Convert a .docx file to PDF without Microsoft Word.", group: "convert-to", icon: "FileText", size: "main", legacy: ["/docx-to-pdf"] },
   { slug: "excel-to-pdf", name: "Excel to PDF", short: "Turn .xlsx sheets or CSV files into a printable PDF.", group: "convert-to", icon: "Sheet", size: "main", legacy: ["/xlsx-to-pdf"] },
+  { slug: "ipynb-to-pdf", name: "Jupyter Notebook to PDF", short: "Convert an .ipynb notebook with charts and outputs to a PDF.", group: "convert-to", icon: "NotebookText", size: "main" },
+  { slug: "markdown-to-pdf", name: "Markdown to PDF", short: "Turn a .md file or pasted Markdown into a clean PDF.", group: "convert-to", icon: "FileCode", size: "small" },
   { slug: "heic-to-pdf", name: "HEIC to PDF", short: "Convert iPhone photos (HEIC) straight to PDF.", group: "convert-to", icon: "Smartphone", size: "small" },
   { slug: "epub-to-pdf", name: "EPUB to PDF", short: "Turn a DRM-free e-book into a printable PDF.", group: "convert-to", icon: "BookText", size: "small" },
 
@@ -114,6 +117,7 @@ export const registry: ToolEntry[] = [
   { slug: "add-page-numbers", name: "Add Page Numbers", short: "Number pages with your choice of position and style.", group: "edit-sign", icon: "Hash", size: "small" },
   { slug: "watermark-pdf", name: "Watermark PDF", short: "Stamp text like CONFIDENTIAL or DRAFT across every page.", group: "edit-sign", icon: "Stamp", size: "small" },
   { slug: "add-image-to-pdf", name: "Add Image to PDF", short: "Place a photo, logo or stamp anywhere on a PDF page.", group: "edit-sign", icon: "ImagePlus", size: "small" },
+  { slug: "remove-pdf-metadata", name: "Remove PDF Metadata", short: "See and strip author, title, software and dates hidden in a PDF.", group: "edit-sign", icon: "EyeOff", size: "small" },
   { slug: "protect-pdf", name: "Protect PDF", short: "Lock a PDF with a password (AES-256).", group: "edit-sign", icon: "Lock", size: "main" },
 
   // Scan and OCR

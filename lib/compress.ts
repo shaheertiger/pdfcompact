@@ -72,7 +72,7 @@ const tick = () => new Promise<void>((r) => setTimeout(r, 0));
 
 type Kind = "jpeg" | "raw";
 
-type ImageInfo = {
+export type ImageInfo = {
   ref: PDFRef;
   original: PDFRawStream;
   kind: Kind;
@@ -102,7 +102,7 @@ function forEachChild(obj: PDFObject, fn: (o: PDFObject) => void) {
 }
 
 /** Delete every indirect object that can't be reached from the trailer. */
-function collectGarbage(ctx: PDFContext): number {
+export function collectGarbage(ctx: PDFContext): number {
   const seen = new Set<PDFRef>();
   const stack: PDFObject[] = [];
   const { Root, Info } = ctx.trailerInfo;
@@ -356,7 +356,7 @@ function findSeq(b: Uint8Array, from: number, seq: number[]) {
   return -1;
 }
 
-function streamBytes(ctx: PDFContext, obj: PDFObject | undefined): Uint8Array | null {
+export function streamBytes(ctx: PDFContext, obj: PDFObject | undefined): Uint8Array | null {
   const s = obj instanceof PDFRef ? ctx.lookup(obj) : obj;
   if (!(s instanceof PDFRawStream)) return null;
   try {
@@ -366,7 +366,7 @@ function streamBytes(ctx: PDFContext, obj: PDFObject | undefined): Uint8Array | 
   }
 }
 
-function pageContentBytes(ctx: PDFContext, contents: PDFObject | undefined): Uint8Array | null {
+export function pageContentBytes(ctx: PDFContext, contents: PDFObject | undefined): Uint8Array | null {
   if (!contents) return null;
   const c = contents instanceof PDFRef ? ctx.lookup(contents) : contents;
   if (c instanceof PDFArray) {
@@ -436,7 +436,7 @@ function scanResources(
 
 const SAFE_RAW_FILTERS = new Set(["/FlateDecode", "/LZWDecode", "/ASCII85Decode", "/ASCIIHexDecode", "/RunLengthDecode"]);
 
-function filterNames(ctx: PDFContext, dict: PDFDict): string[] | null {
+export function filterNames(ctx: PDFContext, dict: PDFDict): string[] | null {
   const f = dict.lookup(N("Filter"));
   if (!f) return [];
   if (f instanceof PDFName) return [f.toString()];
@@ -453,7 +453,7 @@ function filterNames(ctx: PDFContext, dict: PDFDict): string[] | null {
 }
 
 /** Returns components (1 or 3) and whether it's an RGB ICC profile, or null if unsupported. */
-function colorInfo(ctx: PDFContext, cs: PDFObject | undefined): { comps: 1 | 3; iccRgb: boolean } | null {
+export function colorInfo(ctx: PDFContext, cs: PDFObject | undefined): { comps: 1 | 3; iccRgb: boolean } | null {
   const v = cs instanceof PDFRef ? ctx.lookup(cs) : cs;
   if (v === N("DeviceRGB") || v === N("CalRGB")) return { comps: 3, iccRgb: false };
   if (v === N("DeviceGray") || v === N("CalGray")) return { comps: 1, iccRgb: false };
@@ -472,7 +472,7 @@ function colorInfo(ctx: PDFContext, cs: PDFObject | undefined): { comps: 1 | 3; 
   return null;
 }
 
-function classify(ctx: PDFContext, ref: PDFRef, s: PDFRawStream): ImageInfo | "unsupported" {
+export function classify(ctx: PDFContext, ref: PDFRef, s: PDFRawStream): ImageInfo | "unsupported" {
   const d = s.dict;
   const num = (k: string) => {
     const v = d.lookup(N(k));
@@ -566,7 +566,7 @@ function unpredict(data: Uint8Array, params: PDFDict | undefined, w: number, com
   return out;
 }
 
-function decodeRaw(ctx: PDFContext, img: ImageInfo): ImageData | null {
+export function decodeRaw(ctx: PDFContext, img: ImageInfo): ImageData | null {
   let data: Uint8Array;
   try {
     data = decodePDFRawStream(img.original).decode();
@@ -618,7 +618,7 @@ function looksLikePhoto(d: ImageData): boolean {
 
 type AnyCanvas = OffscreenCanvas | HTMLCanvasElement;
 
-function makeCanvas(w: number, h: number): AnyCanvas {
+export function makeCanvas(w: number, h: number): AnyCanvas {
   if (typeof OffscreenCanvas !== "undefined") return new OffscreenCanvas(w, h);
   const c = document.createElement("canvas");
   c.width = w;
@@ -626,7 +626,7 @@ function makeCanvas(w: number, h: number): AnyCanvas {
   return c;
 }
 
-function ctx2d(c: AnyCanvas) {
+export function ctx2d(c: AnyCanvas) {
   const g = c.getContext("2d") as CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null;
   if (!g) throw new Error("canvas");
   return g;
@@ -640,7 +640,7 @@ export function toGray(d: ImageData) {
   }
 }
 
-async function canvasJpeg(c: AnyCanvas, quality: number): Promise<Uint8Array> {
+export async function canvasJpeg(c: AnyCanvas, quality: number): Promise<Uint8Array> {
   const blob =
     "convertToBlob" in c
       ? await c.convertToBlob({ type: "image/jpeg", quality })
